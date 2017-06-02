@@ -24,7 +24,6 @@
 
 #include "tst-tls-manydynamic.h"
 
-#include <errno.h>
 #include <dlfcn.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -32,8 +31,8 @@
 #include <string.h>
 
 static int do_test (void);
-#include <support/xthread.h>
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"
 
 void *handles[COUNT];
 set_value_func set_value_funcs[COUNT];

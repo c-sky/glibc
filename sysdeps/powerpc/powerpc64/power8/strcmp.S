@@ -18,10 +18,6 @@
 
 #include <sysdep.h>
 
-#ifndef STRCMP
-# define STRCMP strcmp
-#endif
-
 /* Implements the function
 
    size_t [r3] strcmp (const char *s1 [r3], const char *s2 [r4])
@@ -31,24 +27,24 @@
    64K as default, the page cross handling assumes minimum page size of
    4k.  */
 
-EALIGN (STRCMP, 4, 0)
+EALIGN (strcmp, 4, 0)
 	li	r0,0
 
-	/* Check if [s1]+16 or [s2]+16 will cross a 4K page boundary using
+	/* Check if [s1]+32 or [s2]+32 will cross a 4K page boundary using
 	   the code:
 
 	    (((size_t) s1) % PAGE_SIZE > (PAGE_SIZE - ITER_SIZE))
 
-	   with PAGE_SIZE being 4096 and ITER_SIZE begin 16.  */
+	   with PAGE_SIZE being 4096 and ITER_SIZE begin 32.  */
 
 	rldicl	r7,r3,0,52
 	rldicl	r9,r4,0,52
-	cmpldi	cr7,r7,4096-16
+	cmpldi	cr7,r7,4096-32
 	bgt	cr7,L(pagecross_check)
-	cmpldi	cr5,r9,4096-16
+	cmpldi	cr5,r9,4096-32
 	bgt	cr5,L(pagecross_check)
 
-	/* For short string up to 16 bytes, load both s1 and s2 using
+	/* For short string up to 32 bytes, load both s1 and s2 using
 	   unaligned dwords and compare.  */
 	ld	r8,0(r3)
 	ld	r10,0(r4)
@@ -64,11 +60,25 @@ EALIGN (STRCMP, 4, 0)
 	orc.	r9,r12,r11
 	bne	cr0,L(different_nocmpb)
 
-	addi	r7,r3,16
-	addi	r4,r4,16
+	ld	r8,16(r3)
+	ld	r10,16(r4)
+	cmpb	r12,r8,r0
+	cmpb	r11,r8,r10
+	orc.	r9,r12,r11
+	bne	cr0,L(different_nocmpb)
+
+	ld	r8,24(r3)
+	ld	r10,24(r4)
+	cmpb	r12,r8,r0
+	cmpb	r11,r8,r10
+	orc.	r9,r12,r11
+	bne	cr0,L(different_nocmpb)
+
+	addi	r7,r3,32
+	addi	r4,r4,32
 
 L(align_8b):
-	/* Now it has checked for first 16 bytes, align source1 to doubleword
+	/* Now it has checked for first 32 bytes, align source1 to doubleword
 	   and adjust source2 address.  */
 	rldicl	r9,r7,0,61	/* source1 alignment to doubleword  */
 	subf	r4,r9,r4	/* Adjust source2 address based on source1
@@ -243,5 +253,5 @@ L(pagecross_retdiff):
 L(pagecross_nullfound):
 	li	r3,0
 	b	L(pagecross_retdiff)
-END (STRCMP)
+END (strcmp)
 libc_hidden_builtin_def (strcmp)

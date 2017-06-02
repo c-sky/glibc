@@ -20,6 +20,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <libc-internal.h>
+
 
 hp_timing_t
 __get_clockfreq (void)

@@ -19,10 +19,11 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <pthread.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <tls.h>
+
 
 #define N 3
 

@@ -25,9 +25,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <math.h>
-#include <libc-diag.h>
-
+#include <libc-internal.h>
+#include <sys/cdefs.h>
 /* R_e is not set in cases where it is not used in packing, but the
    compiler does not see that it is set in all cases where it is
    used, resulting in warnings that it may be used uninitialized.
@@ -36,7 +35,7 @@
    macro is defined.  */
 DIAG_PUSH_NEEDS_COMMENT;
 DIAG_IGNORE_NEEDS_COMMENT (4.9, "-Wmaybe-uninitialized");
-
+#include <math.h>
 #include "soft-fp.h"
 #include "double.h"
 

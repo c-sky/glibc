@@ -31,8 +31,6 @@ routines := accept bind connect getpeername getsockname getsockopt	\
 	    setsockopt shutdown socket socketpair isfdtype opensock	\
 	    sockatmark accept4 recvmmsg sendmmsg
 
-tests := tst-accept4
-
-aux	 := sa_len
+aux	 := have_sock_cloexec sa_len
 
 include ../Rules

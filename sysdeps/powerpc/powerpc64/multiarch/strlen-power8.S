@@ -18,7 +18,20 @@
 
 #include <sysdep.h>
 
-#define STRLEN __strlen_power8
+#undef EALIGN
+#define EALIGN(name, alignt, words)				\
+  .section ".text";						\
+  ENTRY_2(__strlen_power8)					\
+  .align ALIGNARG(alignt);					\
+  EALIGN_W_##words;						\
+  BODY_LABEL(__strlen_power8):					\
+  cfi_startproc;						\
+  LOCALENTRY(__strlen_power8)
+#undef END
+#define END(name)						\
+  cfi_endproc;							\
+  TRACEBACK(__strlen_power8)					\
+  END_2(__strlen_power8)
 
 #undef libc_hidden_builtin_def
 #define libc_hidden_builtin_def(name)

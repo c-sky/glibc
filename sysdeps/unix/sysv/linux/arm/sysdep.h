@@ -152,6 +152,7 @@ __local_syscall_error:						\
   pop { lr }; \
   cfi_adjust_cfa_offset (-4); \
   cfi_restore (lr); \
+  bx lr \
   bx lr
 #  else
 #   define POP_PC  pop { pc }

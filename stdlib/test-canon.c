@@ -26,7 +26,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/param.h>
-#include <sys/stat.h>
 
 /* Prototype for our test function.  */
 extern int do_test (int argc, char *argv[]);

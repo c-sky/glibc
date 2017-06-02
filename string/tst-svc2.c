@@ -26,7 +26,7 @@ compare (const char *str1, const char *str2, int exp)
 }
 
 
-int
+static int
 do_test (void)
 {
   int res = 0;
@@ -58,4 +58,5 @@ do_test (void)
   return res;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

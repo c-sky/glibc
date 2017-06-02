@@ -27,20 +27,20 @@ one_test (const char *fmt, int argc, char *argv[], int n, int expected[n])
       int c = getopt_long (argc, argv, fmt, opts, NULL);
       if (c != expected[i])
 	{
-	  printf ("%s: format '%s' test %d failed: expected '%c', got '%c'\n",
-		  argv[0], fmt, i, expected[i], c);
+	  printf ("format '%s' test %d failed: expected '%c', got '%c'\n",
+		  fmt, i, expected[i], c);
 	  res = 1;
 	}
       else if (optarg != NULL)
 	{
-	  printf ("%s: format '%s' test %d failed: optarg is \"%s\", not NULL\n",
-		  argv[0], fmt, i, optarg);
+	  printf ("format '%s' test %d failed: optarg is \"%s\", not NULL\n",
+		  fmt, i, optarg);
 	  res = 1;
 	}
       if (ftell (stderr) != 0)
 	{
-	  printf ("%s: format '%s' test %d failed: printed to stderr\n",
-		  argv[0], fmt, i);
+	  printf ("format '%s' test %d failed: printed to stderr\n",
+		  fmt, i);
 	  res = 1;
 	}
     }
@@ -68,11 +68,11 @@ do_test (void)
   remove (fname);
 
   int ret = one_test ("W;", 2,
-		      (char *[2]) { (char *) "bug-getopt4a", (char *) "--a" },
+		      (char *[2]) { (char *) "bug-getopt4", (char *) "--a" },
 		      1, (int [1]) { 'a' });
 
   ret |= one_test ("W;", 3,
-		   (char *[3]) { (char *) "bug-getopt4b", (char *) "-W",
+		   (char *[3]) { (char *) "bug-getopt4", (char *) "-W",
 				 (char *) "a" },
 		   1, (int [1]) { 'a' });
 

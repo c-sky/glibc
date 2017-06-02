@@ -27,11 +27,8 @@
    If source and destiny overlaps, a optimized backwards memcpy is used
    instead.  */
 
-#ifndef MEMMOVE
-# define MEMMOVE memmove
-#endif
 	.machine power7
-EALIGN (MEMMOVE, 5, 0)
+EALIGN (memmove, 5, 0)
 	CALL_MCOUNT 3
 
 L(_memmove):
@@ -819,7 +816,7 @@ L(end_unaligned_loop_bwd):
 	stb	r8,-7(r11)
 	/* Return original DST pointer.  */
 	blr
-END_GEN_TB (MEMMOVE, TB_TOCLESS)
+END_GEN_TB (memmove, TB_TOCLESS)
 libc_hidden_builtin_def (memmove)
 
 

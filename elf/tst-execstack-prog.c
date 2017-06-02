@@ -30,4 +30,6 @@ deeper (void (*f) (void))
   memfrob (stack, sizeof stack);
 }
 
-#include <support/test-driver.c>
+
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

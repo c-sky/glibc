@@ -13,7 +13,7 @@ compare (const void *p1, const void *p2)
   return strverscmp (*((char **) p1), *((char **) p2));
 }
 
-int
+static int
 do_test (void)
 {
   char line[MAX_LINE_SIZE + 1];
@@ -44,4 +44,5 @@ do_test (void)
   return EXIT_SUCCESS;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

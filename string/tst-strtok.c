@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int
+static int
 do_test (void)
 {
   char buf[1] = { 0 };
@@ -22,4 +22,5 @@ do_test (void)
   return result;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

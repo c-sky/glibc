@@ -23,9 +23,7 @@
 #else
 # define TEST_NAME "wmemchr"
 #endif /* WIDE */
-
 #include "test-string.h"
-#include <stdint.h>
 
 #ifndef WIDE
 # define MEMCHR memchr
@@ -210,14 +208,8 @@ test_main (void)
       do_test (0, i, i + 1, i + 1, 0);
     }
 
-  /* BZ#21182 - wrong overflow calculation for i686 implementation
-     with address near end of the page.  */
-  for (i = 2; i < 16; ++i)
-    /* page_size is in fact getpagesize() * 2.  */
-    do_test (page_size / 2 - i, i, i, 1, 0x9B);
-
   do_random_tests ();
   return ret;
 }
 
-#include <support/test-driver.c>
+#include "../test-skeleton.c"

@@ -38,6 +38,7 @@ __BEGIN_DECLS
 #endif
 
 
+__BEGIN_NAMESPACE_STD
 /* Copy N bytes of SRC to DEST.  */
 extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
 		     size_t __n) __THROW __nonnull ((1, 2));
@@ -45,6 +46,7 @@ extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
    correct behavior for overlapping strings.  */
 extern void *memmove (void *__dest, const void *__src, size_t __n)
      __THROW __nonnull ((1, 2));
+__END_NAMESPACE_STD
 
 /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
    Return the position in DEST one byte past where C was copied,
@@ -56,6 +58,7 @@ extern void *memccpy (void *__restrict __dest, const void *__restrict __src,
 #endif /* Misc || X/Open.  */
 
 
+__BEGIN_NAMESPACE_STD
 /* Set N bytes of S to C.  */
 extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
 
@@ -90,6 +93,7 @@ memchr (const void *__s, int __c, size_t __n) __THROW
 extern void *memchr (const void *__s, int __c, size_t __n)
       __THROW __attribute_pure__ __nonnull ((1));
 #endif
+__END_NAMESPACE_STD
 
 #ifdef __USE_GNU
 /* Search in S for C.  This is similar to `memchr' but there is no
@@ -117,6 +121,7 @@ extern void *memrchr (const void *__s, int __c, size_t __n)
 #endif
 
 
+__BEGIN_NAMESPACE_STD
 /* Copy SRC to DEST.  */
 extern char *strcpy (char *__restrict __dest, const char *__restrict __src)
      __THROW __nonnull ((1, 2));
@@ -146,6 +151,7 @@ extern int strcoll (const char *__s1, const char *__s2)
 extern size_t strxfrm (char *__restrict __dest,
 		       const char *__restrict __src, size_t __n)
      __THROW __nonnull ((2));
+__END_NAMESPACE_STD
 
 #ifdef __USE_XOPEN2K8
 # include <xlocale.h>
@@ -197,6 +203,7 @@ extern char *strndup (const char *__string, size_t __n)
     }))
 #endif
 
+__BEGIN_NAMESPACE_STD
 /* Find the first occurrence of C in S.  */
 #ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
 extern "C++"
@@ -251,6 +258,7 @@ strrchr (const char *__s, int __c) __THROW
 extern char *strrchr (const char *__s, int __c)
      __THROW __attribute_pure__ __nonnull ((1));
 #endif
+__END_NAMESPACE_STD
 
 #ifdef __USE_GNU
 /* This function is similar to `strchr'.  But it returns a pointer to
@@ -266,6 +274,7 @@ extern char *strchrnul (const char *__s, int __c)
 # endif
 #endif
 
+__BEGIN_NAMESPACE_STD
 /* Return the length of the initial segment of S which
    consists entirely of characters not in REJECT.  */
 extern size_t strcspn (const char *__s, const char *__reject)
@@ -333,6 +342,7 @@ extern char *strstr (const char *__haystack, const char *__needle)
 /* Divide S into tokens separated by characters in DELIM.  */
 extern char *strtok (char *__restrict __s, const char *__restrict __delim)
      __THROW __nonnull ((2));
+__END_NAMESPACE_STD
 
 /* Divide S into tokens separated by characters in DELIM.  Information
    passed between calls are stored in SAVE_PTR.  */
@@ -379,9 +389,11 @@ extern void *mempcpy (void *__restrict __dest,
 #endif
 
 
+__BEGIN_NAMESPACE_STD
 /* Return the length of S.  */
 extern size_t strlen (const char *__s)
      __THROW __attribute_pure__ __nonnull ((1));
+__END_NAMESPACE_STD
 
 #ifdef	__USE_XOPEN2K8
 /* Find the length of STRING, but scan at most MAXLEN characters.
@@ -391,8 +403,10 @@ extern size_t strnlen (const char *__string, size_t __maxlen)
 #endif
 
 
+__BEGIN_NAMESPACE_STD
 /* Return a string describing the meaning of the `errno' code in ERRNUM.  */
 extern char *strerror (int __errnum) __THROW;
+__END_NAMESPACE_STD
 #ifdef __USE_XOPEN2K
 /* Reentrant version of `strerror'.
    There are 2 flavors of `strerror_r', GNU which returns the string
@@ -426,13 +440,117 @@ extern char *strerror_r (int __errnum, char *__buf, size_t __buflen)
 extern char *strerror_l (int __errnum, __locale_t __l) __THROW;
 #endif
 
-#ifdef __USE_MISC
-# include <strings.h>
 
-/* Set N bytes of S to 0.  The compiler will not delete a call to this
+/* We define this function always since `bzero' is sometimes needed when
+   the namespace rules does not allow this.  */
+extern void __bzero (void *__s, size_t __n) __THROW __nonnull ((1));
+
+#ifdef __USE_MISC
+/* Copy N bytes of SRC to DEST (like memmove, but args reversed).  */
+extern void bcopy (const void *__src, void *__dest, size_t __n)
+     __THROW __nonnull ((1, 2));
+
+/* Set N bytes of S to 0.  */
+extern void bzero (void *__s, size_t __n) __THROW __nonnull ((1));
+
+/* As bzero, but the compiler will not delete a call to this
    function, even if S is dead after the call.  */
 extern void explicit_bzero (void *__s, size_t __n) __THROW __nonnull ((1));
 
+/* Compare N bytes of S1 and S2 (same as memcmp).  */
+extern int bcmp (const void *__s1, const void *__s2, size_t __n)
+     __THROW __attribute_pure__ __nonnull ((1, 2));
+
+/* Find the first occurrence of C in S (same as strchr).  */
+# ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
+extern "C++"
+{
+extern char *index (char *__s, int __c)
+     __THROW __asm ("index") __attribute_pure__ __nonnull ((1));
+extern const char *index (const char *__s, int __c)
+     __THROW __asm ("index") __attribute_pure__ __nonnull ((1));
+
+#  if defined __OPTIMIZE__ && !defined __CORRECT_ISO_CPP_STRINGS_H_PROTO
+__extern_always_inline char *
+index (char *__s, int __c) __THROW
+{
+  return __builtin_index (__s, __c);
+}
+
+__extern_always_inline const char *
+index (const char *__s, int __c) __THROW
+{
+  return __builtin_index (__s, __c);
+}
+#  endif
+}
+# else
+extern char *index (const char *__s, int __c)
+     __THROW __attribute_pure__ __nonnull ((1));
+# endif
+
+/* Find the last occurrence of C in S (same as strrchr).  */
+# ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
+extern "C++"
+{
+extern char *rindex (char *__s, int __c)
+     __THROW __asm ("rindex") __attribute_pure__ __nonnull ((1));
+extern const char *rindex (const char *__s, int __c)
+     __THROW __asm ("rindex") __attribute_pure__ __nonnull ((1));
+
+#  if defined __OPTIMIZE__ && !defined __CORRECT_ISO_CPP_STRINGS_H_PROTO
+__extern_always_inline char *
+rindex (char *__s, int __c) __THROW
+{
+  return __builtin_rindex (__s, __c);
+}
+
+__extern_always_inline const char *
+rindex (const char *__s, int __c) __THROW
+{
+  return __builtin_rindex (__s, __c);
+}
+#endif
+}
+# else
+extern char *rindex (const char *__s, int __c)
+     __THROW __attribute_pure__ __nonnull ((1));
+# endif
+
+/* Return the position of the first bit set in I, or 0 if none are set.
+   The least-significant bit is position 1, the most-significant 32.  */
+extern int ffs (int __i) __THROW __attribute__ ((__const__));
+
+/* The following two functions are non-standard but necessary for non-32 bit
+   platforms.  */
+# ifdef	__USE_GNU
+extern int ffsl (long int __l) __THROW __attribute__ ((__const__));
+__extension__ extern int ffsll (long long int __ll)
+     __THROW __attribute__ ((__const__));
+# endif
+
+/* Compare S1 and S2, ignoring case.  */
+extern int strcasecmp (const char *__s1, const char *__s2)
+     __THROW __attribute_pure__ __nonnull ((1, 2));
+
+/* Compare no more than N chars of S1 and S2, ignoring case.  */
+extern int strncasecmp (const char *__s1, const char *__s2, size_t __n)
+     __THROW __attribute_pure__ __nonnull ((1, 2));
+#endif /* Use misc.  */
+
+#ifdef	__USE_GNU
+/* Again versions of a few functions which use the given locale instead
+   of the global one.  */
+extern int strcasecmp_l (const char *__s1, const char *__s2,
+			 __locale_t __loc)
+     __THROW __attribute_pure__ __nonnull ((1, 2, 3));
+
+extern int strncasecmp_l (const char *__s1, const char *__s2,
+			  size_t __n, __locale_t __loc)
+     __THROW __attribute_pure__ __nonnull ((1, 2, 4));
+#endif
+
+#ifdef	__USE_MISC
 /* Return the next DELIM-delimited token from *STRINGP,
    terminating it with a '\0', and update *STRINGP to point past it.  */
 extern char *strsep (char **__restrict __stringp,

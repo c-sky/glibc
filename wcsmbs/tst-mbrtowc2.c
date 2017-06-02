@@ -63,4 +63,5 @@ t (const char *ch, size_t nch, const char *loc)
   return ret;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

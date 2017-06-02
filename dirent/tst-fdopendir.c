@@ -5,7 +5,6 @@
 #include <dirent.h>
 #include <stdbool.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #ifndef O_NOATIME
 # define O_NOATIME	0

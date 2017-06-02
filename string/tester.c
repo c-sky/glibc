@@ -32,7 +32,7 @@
 #include <string.h>
 #include <strings.h>
 #include <fcntl.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 
 #define	STREQ(a, b)	(strcmp((a), (b)) == 0)

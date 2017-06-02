@@ -141,7 +141,7 @@ gai_suspend (const struct gaicb *const list[], int ent,
 	  /* An error occurred.  Possibly it's EINTR.  We have to translate
 	     the timeout error report of `pthread_cond_timedwait' to the
 	     form expected from `gai_suspend'.  */
-	  if (__glibc_likely (result == ETIMEDOUT))
+	  if (__builtin_expect (result, ETIMEDOUT) == ETIMEDOUT)
 	    result = EAI_AGAIN;
 	  else if (result == EINTR)
 	    result = EAI_INTR;

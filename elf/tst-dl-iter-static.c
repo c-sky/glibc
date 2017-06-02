@@ -43,4 +43,5 @@ do_test (void)
   return status || count != 1;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

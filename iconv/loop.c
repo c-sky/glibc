@@ -56,7 +56,7 @@
 #include <sys/param.h>		/* For MIN.  */
 #define __need_size_t
 #include <stddef.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 /* We have to provide support for machines which are not able to handled
    unaligned memory accesses.  Some of the character encodings have

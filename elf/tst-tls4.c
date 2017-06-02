@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 
+#define TEST_FUNCTION do_test ()
 static int
 do_test (void)
 {
@@ -46,4 +47,4 @@ do_test (void)
 }
 
 
-#include <support/test-driver.c>
+#include "../test-skeleton.c"

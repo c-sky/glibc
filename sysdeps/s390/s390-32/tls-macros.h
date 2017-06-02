@@ -47,7 +47,7 @@
 	      "alr %0,%%r2\n\t"						      \
 	      "lr %%r12,%1"						      \
 	      : "=&a" (__offset), "=&a" (__save12)			      \
-	      : : "cc", "0", "1", "2", "3", "4", "5", "14");		      \
+	      : : "cc", "0", "1", "2", "3", "4", "5" );			      \
      (int *) (__builtin_thread_pointer() + __offset); })
 #else
 # define TLS_LD(x) \
@@ -63,8 +63,7 @@
 	      "bas %%r14,0(%%r1):tls_ldcall:" #x "\n\t"			      \
 	      "l %0,12(%0)\n\t"						      \
 	      "alr %0,%%r2"						      \
-	      : "=&a" (__offset)					      \
-	      : : "cc", "0", "1", "2", "3", "4", "5", "12", "14");	      \
+	      : "=&a" (__offset) : : "cc", "0", "1", "2", "3", "4", "5", "12" ); \
      (int *) (__builtin_thread_pointer() + __offset); })
 #endif
 
@@ -84,7 +83,7 @@
 	      "lr %0,%%r2\n\t"						      \
 	      "lr %%r12,%1"						      \
 	      : "=&a" (__offset), "=&a" (__save12)			      \
-	      : : "cc", "0", "1", "2", "3", "4", "5", "14");		      \
+	      : : "cc", "0", "1", "2", "3", "4", "5" );			      \
      (int *) (__builtin_thread_pointer() + __offset); })
 #else
 # define TLS_GD(x) \
@@ -98,7 +97,6 @@
 	      "l %%r2,8(%0)\n\t"					      \
 	      "bas %%r14,0(%%r1):tls_gdcall:" #x "\n\t"			      \
 	      "lr %0,%%r2"						      \
-	      : "=&a" (__offset)					      \
-	      : : "cc", "0", "1", "2", "3", "4", "5", "12", "14");	      \
+	      : "=&a" (__offset) : : "cc", "0", "1", "2", "3", "4", "5", "12" ); \
      (int *) (__builtin_thread_pointer() + __offset); })
 #endif

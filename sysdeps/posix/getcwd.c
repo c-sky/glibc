@@ -281,7 +281,13 @@ __getcwd (char *buf, size_t size)
   while (!(thisdev == rootdev && thisino == rootino))
     {
       if (__have_atfcts >= 0)
-	  fd = openat64_not_cancel_3 (fd, "..", O_RDONLY | O_CLOEXEC);
+	{
+	  int mode = O_RDONLY;
+#ifdef O_CLOEXEC
+	  mode |= O_CLOEXEC;
+#endif
+	  fd = openat64_not_cancel_3 (fd, "..", mode);
+	}
       else
 	fd = -1;
       if (fd >= 0)

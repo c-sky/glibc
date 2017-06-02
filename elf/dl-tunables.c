@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <libc-internal.h>
 #include <sysdep.h>
 #include <fcntl.h>
 #include <ldsodefs.h>
@@ -454,8 +455,6 @@ __tunable_set_val (tunable_id_t id, void *valp, tunable_callback_t callback)
   if (cur->strval == NULL)
     return;
 
-  /* Caller does not need the value, just call the callback with our tunable
-     value.  */
   if (valp == NULL)
     goto cb;
 

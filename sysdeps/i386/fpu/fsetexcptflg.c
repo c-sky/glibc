@@ -41,7 +41,7 @@ __fesetexceptflag (const fexcept_t *flagp, int excepts)
   __asm__ ("fldenv %0" : : "m" (*&temp));
 
   /* If the CPU supports SSE, we set the MXCSR as well.  */
-  if (HAS_CPU_FEATURE (SSE))
+  if ((GLRO(dl_hwcap) & HWCAP_I386_XMM) != 0)
     {
       unsigned int xnew_exc;
 

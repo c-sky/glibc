@@ -33,11 +33,8 @@
    possible when both source and destination are doubleword aligned.
    Each case has a optimized unrolled loop.   */
 
-#ifndef MEMCPY
-# define MEMCPY memcpy
-#endif
 	.machine power4
-EALIGN (MEMCPY, 5, 0)
+EALIGN (memcpy, 5, 0)
 	CALL_MCOUNT 3
 
     cmpldi cr1,5,31
@@ -473,5 +470,5 @@ EALIGN (MEMCPY, 5, 0)
     ld 31,-8(1)
     ld 3,-16(1)
     blr
-END_GEN_TB (MEMCPY,TB_TOCLESS)
+END_GEN_TB (memcpy,TB_TOCLESS)
 libc_hidden_builtin_def (memcpy)

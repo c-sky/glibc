@@ -68,18 +68,31 @@
 #define __ASSUME_PRIVATE_FUTEX	1
 
 /* Support for various CLOEXEC and NONBLOCK flags was added in
+   2.6.23.  */
+#define __ASSUME_O_CLOEXEC	1
+
+/* Support for various CLOEXEC and NONBLOCK flags was added in
    2.6.27.  */
 #define __ASSUME_IN_NONBLOCK	1
+#define __ASSUME_PIPE2		1
+#define __ASSUME_DUP3		1
 
 /* Support for accept4 functionality was added in 2.6.28, but for some
    architectures using a separate syscall rather than socketcall that
    syscall was only added later, and some architectures first had
    socketcall support then a separate syscall.  Define
+   __ASSUME_ACCEPT4_SOCKETCALL if glibc uses socketcall on this
+   architecture and accept4 is available through socketcall,
    __ASSUME_ACCEPT4_SYSCALL if it is available through a separate
-   syscall, and __ASSUME_ACCEPT4_SYSCALL_WITH_SOCKETCALL if it became
+   syscall, __ASSUME_ACCEPT4_SYSCALL_WITH_SOCKETCALL if it became
    available through a separate syscall at the same time as through
-   socketcall.  */
+   socketcall, and __ASSUME_ACCEPT4 if the accept4 function is known
+   to work.  */
+#ifdef __ASSUME_SOCKETCALL
+# define __ASSUME_ACCEPT4_SOCKETCALL	1
+#endif
 #define __ASSUME_ACCEPT4_SYSCALL	1
+#define __ASSUME_ACCEPT4	1
 
 /* Support for the FUTEX_CLOCK_REALTIME flag was added in 2.6.29.  */
 #define __ASSUME_FUTEX_CLOCK_REALTIME	1
@@ -87,6 +100,11 @@
 /* Support for preadv and pwritev was added in 2.6.30.  */
 #define __ASSUME_PREADV	1
 #define __ASSUME_PWRITEV	1
+
+/* Support for FUTEX_*_REQUEUE_PI was added in 2.6.31 (but some
+   architectures lack futex_atomic_cmpxchg_inatomic in some
+   configurations).  */
+#define __ASSUME_REQUEUE_PI	1
 
 /* Support for recvmmsg functionality was added in 2.6.33.  The macros
    defined correspond to those for accept4.  */
@@ -129,10 +147,6 @@
    separate syscalls were only added later.  */
 #define __ASSUME_SENDMSG_SYSCALL	1
 #define __ASSUME_RECVMSG_SYSCALL	1
-#define __ASSUME_ACCEPT_SYSCALL		1
-#define __ASSUME_CONNECT_SYSCALL	1
-#define __ASSUME_RECVFROM_SYSCALL	1
-#define __ASSUME_SENDTO_SYSCALL		1
 
 /* Support for SysV IPC through wired syscalls.  All supported architectures
    either support ipc syscall and/or all the ipc correspondent syscalls.  */

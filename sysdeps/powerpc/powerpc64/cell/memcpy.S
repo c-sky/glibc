@@ -18,10 +18,6 @@
 
 #include <sysdep.h>
 
-#ifndef MEMCPY
-# define MEMCPY memcpy
-#endif
-
 #define PREFETCH_AHEAD 6	/* no cache lines SRC prefetching ahead  */
 #define ZERO_AHEAD 4		/* no cache lines DST zeroing ahead  */
 
@@ -43,7 +39,7 @@
 
 .align  7
 
-EALIGN (MEMCPY, 5, 0)
+EALIGN (memcpy, 5, 0)
 	CALL_MCOUNT 3
 
 	dcbt	0,r4		/* Prefetch ONE SRC cacheline  */
@@ -242,5 +238,5 @@ EALIGN (MEMCPY, 5, 0)
 	stb	r0,0(r6)
 1:	blr
 
-END_GEN_TB (MEMCPY,TB_TOCLESS)
+END_GEN_TB (memcpy,TB_TOCLESS)
 libc_hidden_builtin_def (memcpy)

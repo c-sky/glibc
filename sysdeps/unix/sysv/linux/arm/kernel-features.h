@@ -23,6 +23,7 @@
    futex_atomic_cmpxchg_inatomic, depending on kernel
    configuration.  */
 #if __LINUX_KERNEL_VERSION < 0x030E03
+# undef __ASSUME_REQUEUE_PI
 # undef __ASSUME_SET_ROBUST_LIST
 #endif
 
@@ -36,6 +37,3 @@
 /* ARM only has a syscall for fadvise64{_64} and it is defined with a
    non-standard name.  */
 #define __NR_fadvise64_64 __NR_arm_fadvise64_64
-
-#define __ASSUME_RECV_SYSCALL   1
-#define __ASSUME_SEND_SYSCALL	1

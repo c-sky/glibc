@@ -32,7 +32,4 @@
 /* Alpha defines SysV ipc shmat syscall with a different name.  */
 #define __NR_shmat __NR_osf_shmat
 
-#define __ASSUME_RECV_SYSCALL	1
-#define __ASSUME_SEND_SYSCALL	1
-
 #endif /* _KERNEL_FEATURES_H */

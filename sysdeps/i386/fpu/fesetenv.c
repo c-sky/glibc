@@ -79,7 +79,7 @@ __fesetenv (const fenv_t *envp)
 
   __asm__ ("fldenv %0" : : "m" (temp));
 
-  if (HAS_CPU_FEATURE (SSE))
+  if ((GLRO(dl_hwcap) & HWCAP_I386_XMM) != 0)
     {
       unsigned int mxcsr;
       __asm__ ("stmxcsr %0" : "=m" (mxcsr));

@@ -59,7 +59,7 @@
 #include <resolv/resolv.h>
 
 #include <kernel-features.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 
 /* Support to run nscd as an unprivileged user */
@@ -255,6 +255,10 @@ int inotify_fd = -1;
 #ifdef HAVE_NETLINK
 /* Descriptor for netlink status updates.  */
 static int nl_status_fd = -1;
+#endif
+
+#ifndef __ASSUME_ACCEPT4
+static int have_accept4;
 #endif
 
 /* Number of times clients had to wait.  */
@@ -495,6 +499,13 @@ fail:
 }
 
 
+#ifdef O_CLOEXEC
+# define EXTRA_O_FLAGS O_CLOEXEC
+#else
+# define EXTRA_O_FLAGS 0
+#endif
+
+
 /* Initialize database information structures.  */
 void
 nscd_init (void)
@@ -517,7 +528,7 @@ nscd_init (void)
 	if (dbs[cnt].persistent)
 	  {
 	    /* Try to open the appropriate file on disk.  */
-	    int fd = open (dbs[cnt].db_filename, O_RDWR | O_CLOEXEC);
+	    int fd = open (dbs[cnt].db_filename, O_RDWR | EXTRA_O_FLAGS);
 	    if (fd != -1)
 	      {
 		char *msg = NULL;
@@ -597,7 +608,7 @@ nscd_init (void)
 		    if (dbs[cnt].shared)
 		      {
 			dbs[cnt].ro_fd = open (dbs[cnt].db_filename,
-					       O_RDONLY | O_CLOEXEC);
+					       O_RDONLY | EXTRA_O_FLAGS);
 			if (dbs[cnt].ro_fd == -1)
 			  dbg_log (_("\
 cannot create read-only descriptor for \"%s\"; no mmap"),
@@ -637,23 +648,23 @@ cannot create read-only descriptor for \"%s\"; no mmap"),
 	    if (dbs[cnt].persistent)
 	      {
 		fd = open (dbs[cnt].db_filename,
-			   O_RDWR | O_CREAT | O_EXCL | O_TRUNC | O_CLOEXEC,
+			   O_RDWR | O_CREAT | O_EXCL | O_TRUNC | EXTRA_O_FLAGS,
 			   S_IRUSR | S_IWUSR);
 		if (fd != -1 && dbs[cnt].shared)
 		  ro_fd = open (dbs[cnt].db_filename,
-				O_RDONLY | O_CLOEXEC);
+				O_RDONLY | EXTRA_O_FLAGS);
 	      }
 	    else
 	      {
 		char fname[] = _PATH_NSCD_XYZ_DB_TMP;
-		fd = mkostemp (fname, O_CLOEXEC);
+		fd = mkostemp (fname, EXTRA_O_FLAGS);
 
 		/* We do not need the file name anymore after we
 		   opened another file descriptor in read-only mode.  */
 		if (fd != -1)
 		  {
 		    if (dbs[cnt].shared)
-		      ro_fd = open (fname, O_RDONLY | O_CLOEXEC);
+		      ro_fd = open (fname, O_RDONLY | EXTRA_O_FLAGS);
 
 		    unlink (fname);
 		  }
@@ -770,6 +781,24 @@ cannot create read-only descriptor for \"%s\"; no mmap"),
 		  close (ro_fd);
 	      }
 	  }
+
+#if !defined O_CLOEXEC || !defined __ASSUME_O_CLOEXEC
+	/* We do not check here whether the O_CLOEXEC provided to the
+	   open call was successful or not.  The two fcntl calls are
+	   only performed once each per process start-up and therefore
+	   is not noticeable at all.  */
+	if (paranoia
+	    && ((dbs[cnt].wr_fd != -1
+		 && fcntl (dbs[cnt].wr_fd, F_SETFD, FD_CLOEXEC) == -1)
+		|| (dbs[cnt].ro_fd != -1
+		    && fcntl (dbs[cnt].ro_fd, F_SETFD, FD_CLOEXEC) == -1)))
+	  {
+	    dbg_log (_("\
+cannot set socket to close on exec: %s; disabling paranoia mode"),
+		     strerror (errno));
+	    paranoia = 0;
+	  }
+#endif
 
 	if (dbs[cnt].head == NULL)
 	  {
@@ -1646,6 +1675,16 @@ nscd_run_worker (void *p)
       /* We are done with the list.  */
       pthread_mutex_unlock (&readylist_lock);
 
+#ifndef __ASSUME_ACCEPT4
+      if (have_accept4 < 0)
+	{
+	  /* We do not want to block on a short read or so.  */
+	  int fl = fcntl (fd, F_GETFL);
+	  if (fl == -1 || fcntl (fd, F_SETFL, fl | O_NONBLOCK) == -1)
+	    goto close_and_out;
+	}
+#endif
+
       /* Now read the request.  */
       request_header req;
       if (__builtin_expect (TEMP_FAILURE_RETRY (read (fd, &req, sizeof (req)))
@@ -2085,8 +2124,24 @@ main_loop_poll (void)
 	  if (conns[0].revents != 0)
 	    {
 	      /* We have a new incoming connection.  Accept the connection.  */
-	      int fd = TEMP_FAILURE_RETRY (accept4 (sock, NULL, NULL,
+	      int fd;
+
+#ifndef __ASSUME_ACCEPT4
+	      fd = -1;
+	      if (have_accept4 >= 0)
+#endif
+		{
+		  fd = TEMP_FAILURE_RETRY (accept4 (sock, NULL, NULL,
 						    SOCK_NONBLOCK));
+#ifndef __ASSUME_ACCEPT4
+		  if (have_accept4 == 0)
+		    have_accept4 = fd != -1 || errno != ENOSYS ? 1 : -1;
+#endif
+		}
+#ifndef __ASSUME_ACCEPT4
+	      if (have_accept4 < 0)
+		fd = TEMP_FAILURE_RETRY (accept (sock, NULL, NULL));
+#endif
 
 	      /* Use the descriptor if we have not reached the limit.  */
 	      if (fd >= 0)
@@ -2254,8 +2309,24 @@ main_loop_epoll (int efd)
 	if (revs[cnt].data.fd == sock)
 	  {
 	    /* A new connection.  */
-	    int fd = TEMP_FAILURE_RETRY (accept4 (sock, NULL, NULL,
+	    int fd;
+
+# ifndef __ASSUME_ACCEPT4
+	    fd = -1;
+	    if (have_accept4 >= 0)
+# endif
+	      {
+		fd = TEMP_FAILURE_RETRY (accept4 (sock, NULL, NULL,
 						  SOCK_NONBLOCK));
+# ifndef __ASSUME_ACCEPT4
+		if (have_accept4 == 0)
+		  have_accept4 = fd != -1 || errno != ENOSYS ? 1 : -1;
+# endif
+	      }
+# ifndef __ASSUME_ACCEPT4
+	    if (have_accept4 < 0)
+	      fd = TEMP_FAILURE_RETRY (accept (sock, NULL, NULL));
+# endif
 
 	    /* Use the descriptor if we have not reached the limit.  */
 	    if (fd >= 0)

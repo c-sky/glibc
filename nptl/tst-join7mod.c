@@ -18,7 +18,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 #include <atomic.h>

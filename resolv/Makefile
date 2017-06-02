@@ -43,21 +43,11 @@ routines += gai_sigqueue
 tests += \
   tst-bug18665 \
   tst-bug18665-tcp \
-  tst-ns_name \
-  tst-ns_name_compress \
   tst-res_hconf_reorder \
   tst-res_use_inet6 \
   tst-resolv-basic \
-  tst-resolv-edns \
   tst-resolv-network \
   tst-resolv-search \
-
-# These tests need libdl.
-ifeq (yes,$(build-shared))
-tests += \
-  tst-resolv-canonname \
-
-endif
 
 # This test sends millions of packets and is rather slow.
 xtests += tst-resolv-qtypes
@@ -134,17 +124,9 @@ $(objpfx)tst-bug18665-tcp: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-bug18665: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-res_use_inet6: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-basic: $(objpfx)libresolv.so $(shared-thread-library)
-$(objpfx)tst-resolv-edns: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-network: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-qtypes: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-search: $(objpfx)libresolv.so $(shared-thread-library)
-$(objpfx)tst-resolv-canonname: \
-  $(libdl) $(objpfx)libresolv.so $(shared-thread-library)
-
-$(objpfx)tst-ns_name: $(objpfx)libresolv.so
-$(objpfx)tst-ns_name.out: tst-ns_name.data
-$(objpfx)tst-ns_name_compress: $(objpfx)libresolv.so
-
 
 # This test case uses the deprecated RES_USE_INET6 resolver option.
 CFLAGS-tst-res_use_inet6.c += -Wno-error

@@ -49,4 +49,3 @@ nis_destroygroup (const_nis_name group)
     return NIS_FAIL;
 
 }
-libnsl_hidden_nolink_def (nis_destroygroup, GLIBC_2_1)

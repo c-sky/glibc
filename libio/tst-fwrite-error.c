@@ -18,7 +18,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 static int
 do_test (void)

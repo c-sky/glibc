@@ -1,5 +1,7 @@
 #include <stdint.h>
-#include <stddef.h>
+#include <stdlib.h>
+#include <tls.h>
+
 
 struct tls_obj
 {

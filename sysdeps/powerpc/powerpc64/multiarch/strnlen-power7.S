@@ -18,7 +18,20 @@
 
 #include <sysdep.h>
 
-#define STRNLEN __strnlen_power7
+#undef ENTRY
+#define ENTRY(name)						\
+  .section ".text";						\
+  ENTRY_2(__strnlen_power7)					\
+  .align ALIGNARG(2);						\
+  BODY_LABEL(__strnlen_power7):					\
+  cfi_startproc;						\
+  LOCALENTRY(__strnlen_power7)
+
+#undef END
+#define END(name)						\
+  cfi_endproc;							\
+  TRACEBACK(__strnlen_power7)					\
+  END_2(__strnlen_power7)
 
 #undef libc_hidden_builtin_def
 #define libc_hidden_builtin_def(name)

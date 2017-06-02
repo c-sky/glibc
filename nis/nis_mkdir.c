@@ -40,4 +40,3 @@ nis_mkdir (const_nis_name dir, const nis_server *server)
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_mkdir, GLIBC_2_1)

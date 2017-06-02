@@ -191,4 +191,4 @@ test_main (void)
   return ret;
 }
 
-#include <support/test-driver.c>
+#include "../test-skeleton.c"

@@ -122,7 +122,6 @@ class Context(object):
         self.load_versions_json()
         self.load_build_state_json()
         self.status_log_list = []
-        self.email_warning = False
 
     def get_script_text(self):
         """Return the text of this script."""
@@ -159,6 +158,11 @@ class Context(object):
 
     def add_all_configs(self):
         """Add all known glibc build configurations."""
+        # On architectures missing __builtin_trap support, these
+        # options may be needed as a workaround; see
+        # <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70216> for SH.
+        no_isolate = ('-fno-isolate-erroneous-paths-dereference'
+                      ' -fno-isolate-erroneous-paths-attribute')
         self.add_config(arch='aarch64',
                         os_name='linux-gnu')
         self.add_config(arch='aarch64_be',
@@ -332,23 +336,31 @@ class Context(object):
                         glibcs=[{},
                                 {'arch': 's390', 'ccopts': '-m31'}])
         self.add_config(arch='sh3',
-                        os_name='linux-gnu')
+                        os_name='linux-gnu',
+                        glibcs=[{'ccopts': no_isolate}])
         self.add_config(arch='sh3eb',
-                        os_name='linux-gnu')
+                        os_name='linux-gnu',
+                        glibcs=[{'ccopts': no_isolate}])
         self.add_config(arch='sh4',
-                        os_name='linux-gnu')
+                        os_name='linux-gnu',
+                        glibcs=[{'ccopts': no_isolate}])
         self.add_config(arch='sh4eb',
-                        os_name='linux-gnu')
+                        os_name='linux-gnu',
+                        glibcs=[{'ccopts': no_isolate}])
         self.add_config(arch='sh4',
                         os_name='linux-gnu',
                         variant='soft',
                         gcc_cfg=['--without-fp'],
-                        glibcs=[{'variant': 'soft', 'cfg': ['--without-fp']}])
+                        glibcs=[{'variant': 'soft',
+                                 'cfg': ['--without-fp'],
+                                 'ccopts': no_isolate}])
         self.add_config(arch='sh4eb',
                         os_name='linux-gnu',
                         variant='soft',
                         gcc_cfg=['--without-fp'],
-                        glibcs=[{'variant': 'soft', 'cfg': ['--without-fp']}])
+                        glibcs=[{'variant': 'soft',
+                                 'cfg': ['--without-fp'],
+                                 'ccopts': no_isolate}])
         self.add_config(arch='sparc64',
                         os_name='linux-gnu',
                         glibcs=[{},
@@ -683,10 +695,10 @@ class Context(object):
     def checkout(self, versions):
         """Check out the desired component versions."""
         default_versions = {'binutils': 'vcs-2.28',
-                            'gcc': 'vcs-7',
+                            'gcc': 'vcs-6',
                             'glibc': 'vcs-mainline',
                             'gmp': '6.1.1',
-                            'linux': '4.10',
+                            'linux': '4.9',
                             'mpc': '1.0.3',
                             'mpfr': '3.1.5'}
         use_versions = {}
@@ -991,15 +1003,6 @@ class Context(object):
 
     def bot_build_mail(self, action, build_time):
         """Send email with the results of a build."""
-        if not ('email-from' in self.bot_config and
-                'email-server' in self.bot_config and
-                'email-subject' in self.bot_config and
-                'email-to' in self.bot_config):
-            if not self.email_warning:
-                print("Email not configured, not sending.")
-                self.email_warning = True
-            return
-
         build_time = build_time.replace(microsecond=0)
         subject = (self.bot_config['email-subject'] %
                    {'action': action,
@@ -1196,6 +1199,7 @@ class Config(object):
                     'i786': 'x86',
                     'ia64': 'ia64',
                     'm68k': 'm68k',
+                    'csky': 'csky',
                     'microblaze': 'microblaze',
                     'mips': 'mips',
                     'nios2': 'nios2',

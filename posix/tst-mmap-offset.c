@@ -1,4 +1,4 @@
-/* BZ #18877 and #21270 mmap offset test.
+/* BZ #18877 mmap offset test.
 
    Copyright (C) 2015-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
@@ -17,42 +17,22 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/mman.h>
 
-#include <support/check.h>
-
-static int fd;
-static long int page_shift;
-static char fname[] = "tst-mmap-offset-XXXXXX";
-
-static void
-do_prepare (int argc, char **argv)
+static int
+printmsg (int rc, const char *msg)
 {
-  fd = mkstemp64 (fname);
-  if (fd < 0)
-    FAIL_EXIT1 ("mkstemp failed");
-
-  if (unlink (fname))
-    FAIL_EXIT1 ("unlink failed");
-
-  long sz = sysconf(_SC_PAGESIZE);
-  if (sz == -1)
-    sz = 4096L;
-  page_shift = ffs (sz) - 1;
+  printf ("%s failed: %m\n", msg);
+  return rc;
 }
-
-#define PREPARE do_prepare
-
 
 /* Check if negative offsets are handled correctly by mmap.  */
 static int
-do_test_bz18877 (void)
+do_test (void)
 {
   const int prot = PROT_READ | PROT_WRITE;
   const int flags = MAP_SHARED;
@@ -60,13 +40,22 @@ do_test_bz18877 (void)
   const unsigned long offset = 0xace00000;
   const unsigned long size = offset + length;
   void *addr;
+  int fd;
+  char fname[] = "tst-mmap-offset-XXXXXX";
+
+  fd = mkstemp64 (fname);
+  if (fd < 0)
+    return printmsg (1, "mkstemp");
+
+  if (unlink (fname))
+    return printmsg (1, "unlink");
 
   if (ftruncate64 (fd, size))
-    FAIL_RET ("ftruncate64 failed");
+    return printmsg (0, "ftruncate64");
 
   addr = mmap (NULL, length, prot, flags, fd, offset);
   if (MAP_FAILED == addr)
-    FAIL_RET ("mmap failed");
+    return printmsg (1, "mmap");
 
   /* This memcpy is likely to SIGBUS if mmap has messed up with offset.  */
   memcpy (addr, fname, sizeof (fname));
@@ -74,45 +63,5 @@ do_test_bz18877 (void)
   return 0;
 }
 
-/* Check if invalid offset are handled correctly by mmap.  */
-static int
-do_test_bz21270 (void)
-{
-  /* For architectures with sizeof (off_t) < sizeof (off64_t) mmap is
-     implemented with __SYS_mmap2 syscall and the offset is represented in
-     multiples of page size.  For offset larger than
-     '1 << (page_shift + 8 * sizeof (off_t))' (that is, 1<<44 on system with
-     page size of 4096 bytes) the system call silently truncates the offset.
-     For this case glibc mmap implementation returns EINVAL.  */
-  const int prot = PROT_READ | PROT_WRITE;
-  const int flags = MAP_SHARED;
-  const int64_t offset = 1ULL << (page_shift + 8 * sizeof (uint32_t));
-  const size_t length = 4096;
-
-  void *addr = mmap64 (NULL, length, prot, flags, fd, offset);
-  if (sizeof (off_t) < sizeof (off64_t))
-    {
-      if ((addr != MAP_FAILED) && (errno != EINVAL))
-	FAIL_RET ("mmap succeed");
-    }
-  else
-    {
-      if (addr == MAP_FAILED)
-	FAIL_RET ("mmap failed");
-    }
-
-  return 0;
-}
-
-int
-do_test (void)
-{
-  int ret = 0;
-
-  ret += do_test_bz18877 ();
-  ret += do_test_bz21270 ();
-
-  return ret;
-}
-
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

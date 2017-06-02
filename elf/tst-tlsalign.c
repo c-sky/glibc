@@ -81,4 +81,5 @@ do_test (void)
   return fail ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

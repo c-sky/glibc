@@ -55,7 +55,7 @@
 #define STRINGIFY2(s) #s
 
 
-int
+static int
 do_test (void)
 {
   int size = sysconf (_SC_PAGESIZE);
@@ -558,4 +558,5 @@ memccpy copied too much for outer = %d, middle = %d, inner = %d\n",
   return result;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

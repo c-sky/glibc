@@ -23,11 +23,8 @@
 /* __ptr_t [r3] __mempcpy (__ptr_t dst [r3], __ptr_t src [r4], size_t len [r5]);
     Returns 'dst' + 'len'.  */
 
-#ifndef MEMPCPY
-# define MEMPCPY __mempcpy
-#endif
 	.machine  power7
-EALIGN (MEMPCPY, 5, 0)
+EALIGN (__mempcpy, 5, 0)
 	CALL_MCOUNT 3
 
 	cmpldi	cr1,5,31
@@ -466,7 +463,7 @@ L(end_unaligned_loop):
 	add	3,3,5
 	blr
 
-END_GEN_TB (MEMPCPY,TB_TOCLESS)
+END_GEN_TB (__mempcpy,TB_TOCLESS)
 libc_hidden_def (__mempcpy)
 weak_alias (__mempcpy, mempcpy)
 libc_hidden_builtin_def (mempcpy)

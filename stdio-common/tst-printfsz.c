@@ -2,7 +2,7 @@
 #include <printf.h>
 #include <stdio.h>
 #include <string.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 #define V       12345678.12345678
 

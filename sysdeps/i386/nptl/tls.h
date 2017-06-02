@@ -26,7 +26,7 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <sysdep.h>
-# include <libc-pointer-arith.h> /* For cast_to_integer. */
+# include <libc-internal.h>
 # include <kernel-features.h>
 # include <dl-dtv.h>
 
@@ -392,6 +392,22 @@ tls_fill_user_desc (union user_desc_init *desc,
 	    else							      \
 	      /* Not necessary for other sizes in the moment.  */	      \
 	      abort (); })
+
+
+/* Call the user-provided thread function.  */
+#define CALL_THREAD_FCT(descr) \
+  ({ void *__res;							      \
+     int __ignore1, __ignore2;						      \
+     asm volatile ("pushl %%eax\n\t"					      \
+		   "pushl %%eax\n\t"					      \
+		   "pushl %%eax\n\t"					      \
+		   "pushl %%gs:%P4\n\t"					      \
+		   "call *%%gs:%P3\n\t"					      \
+		   "addl $16, %%esp"					      \
+		   : "=a" (__res), "=c" (__ignore1), "=d" (__ignore2)	      \
+		   : "i" (offsetof (struct pthread, start_routine)),	      \
+		     "i" (offsetof (struct pthread, arg)));		      \
+     __res; })
 
 
 /* Set the stack guard field in TCB head.  */

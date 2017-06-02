@@ -23,9 +23,6 @@
 #include <stdint.h>
 #include <pthread.h>
 
-#include <support/check.h>
-#include <support/xthread.h>
-
 #include <sys/auxv.h>
 
 #include <dl-procinfo.h>
@@ -151,6 +148,7 @@ do_test (void)
   pthread_attr_t attr;
   pthread_attr_init (&attr);
   pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
+  void *status;
 
   long i = 0;
 
@@ -162,10 +160,22 @@ do_test (void)
 
   /* Check for other thread.  */
   i++;
-  threads[i] = xpthread_create (&attr, t1, (void *)i);
+  if (pthread_create (&threads[i], &attr, t1, (void *)i))
+    {
+      printf ("FAIL: error creating thread %ld.\n", i);
+      return 1;
+    }
 
   pthread_attr_destroy (&attr);
-  TEST_VERIFY_EXIT (xpthread_join (threads[i]) == NULL);
+  if (pthread_join (threads[i], &status))
+    {
+      printf ("FAIL: error joining thread %ld.\n", i);
+      return 1;
+    }
+  if (status)
+    {
+      return 1;
+    }
 
   printf("PASS: HWCAP, HWCAP2 and AT_PLATFORM are correctly set in the TCB for"
 	 " all threads.\n");
@@ -174,4 +184,5 @@ do_test (void)
 
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

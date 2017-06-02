@@ -19,7 +19,7 @@
 #ifndef _WEIGHT_H_
 #define _WEIGHT_H_	1
 
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 /* Find index of weight.  */
 static inline int32_t __attribute__ ((always_inline))

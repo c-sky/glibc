@@ -16,15 +16,12 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _NACL_DL_MAP_SEGMENTS_H
-#define _NACL_DL_MAP_SEGMENTS_H 1
-
 #include <assert.h>
 #include <dl-load.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <libc-pointer-arith.h>
+#include <libc-internal.h>
 
 
 /* This is basically pread, but with iteration after short reads.  */
@@ -265,5 +262,3 @@ _dl_map_segments (struct link_map *l, int fd,
 
   return NULL;
 }
-
-#endif /* dl-map-segments.h */

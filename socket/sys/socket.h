@@ -23,7 +23,7 @@
 
 __BEGIN_DECLS
 
-#include <bits/types/struct_iovec.h>
+#include <sys/uio.h>
 #define	__need_size_t
 #include <stddef.h>
 #ifdef __USE_GNU

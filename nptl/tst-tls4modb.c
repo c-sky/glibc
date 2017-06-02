@@ -16,8 +16,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <tls.h>
+
 
 static int i;
 int bar;

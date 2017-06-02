@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
 
 /* Name of the FIFO.  */
 char tmpname[] = "fifoXXXXXX";

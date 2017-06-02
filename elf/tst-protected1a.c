@@ -40,8 +40,10 @@ extern int do_test (void);
 
 int protected2 = -1;
 
+#define TEST_FUNCTION do_test ()
+
 /* This defines the `main' function and some more.  */
-#include <support/test-driver.c>
+#include <test-skeleton.c>
 
 int
 do_test (void)

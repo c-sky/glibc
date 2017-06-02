@@ -47,7 +47,6 @@ nis_servstate (const nis_server *serv, const nis_tag *tags,
 
   return NIS_SUCCESS;
 }
-libnsl_hidden_nolink_def (nis_servstate, GLIBC_2_1)
 
 nis_error
 nis_stats (const nis_server *serv, const nis_tag *tags,
@@ -74,7 +73,6 @@ nis_stats (const nis_server *serv, const nis_tag *tags,
 
   return NIS_SUCCESS;
 }
-libnsl_hidden_nolink_def (nis_stats, GLIBC_2_1)
 
 void
 nis_freetags (nis_tag *tags, const int numtags)
@@ -85,4 +83,3 @@ nis_freetags (nis_tag *tags, const int numtags)
     free (tags[i].tag_val);
   free (tags);
 }
-libnsl_hidden_nolink_def (nis_freetags, GLIBC_2_1)

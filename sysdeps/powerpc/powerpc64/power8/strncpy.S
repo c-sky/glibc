@@ -19,18 +19,10 @@
 #include <sysdep.h>
 
 #ifdef USE_AS_STPNCPY
-# ifndef STPNCPY
-#   define FUNC_NAME __stpncpy
-# else
-#   define FUNC_NAME STPNCPY
-# endif
+# define FUNC_NAME __stpncpy
 #else
-# ifndef STRNCPY
-#  define FUNC_NAME strncpy
-# else
-#  define FUNC_NAME STRNCPY
-# endif
-#endif  /* !USE_AS_STPNCPY  */
+# define FUNC_NAME strncpy
+#endif
 
 #ifndef MEMSET
 /* For builds without IFUNC support, local calls should be made to internal

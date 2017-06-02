@@ -45,7 +45,11 @@ _dl_sysdep_read_whole_file (const char *file, size_t *sizep, int prot)
 {
   void *result = MAP_FAILED;
   struct stat64 st;
-  int fd = __open (file, O_RDONLY | O_CLOEXEC);
+  int flags = O_RDONLY;
+#ifdef O_CLOEXEC
+  flags |= O_CLOEXEC;
+#endif
+  int fd = __open (file, flags);
   if (fd >= 0)
     {
       if (__fxstat64 (_STAT_VER, fd, &st) >= 0)

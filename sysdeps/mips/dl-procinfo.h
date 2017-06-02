@@ -28,6 +28,13 @@
 
 #define _DL_PLATFORMS_COUNT   4
 
+static inline const char *
+__attribute__ ((unused))
+_dl_platform_string (int idx)
+{
+  return GLRO(dl_mips_platforms)[idx];
+};
+
 static inline int
 __attribute__ ((unused, always_inline))
 _dl_string_platform (const char *str)
@@ -37,7 +44,7 @@ _dl_string_platform (const char *str)
   if (str != NULL)
     for (i = 0; i < _DL_PLATFORMS_COUNT; ++i)
       {
-        if (strcmp (str, GLRO(dl_mips_platforms)[i]) == 0)
+        if (strcmp (str, _dl_platform_string (i)) == 0)
           return i;
       }
   return -1;

@@ -18,7 +18,21 @@
 
 #include <sysdep.h>
 
-#define MEMSET __memset_power6
+#undef EALIGN
+#define EALIGN(name, alignt, words)				\
+  .section ".text";						\
+  ENTRY_2(__memset_power6)					\
+  .align ALIGNARG(alignt);					\
+  EALIGN_W_##words;						\
+  BODY_LABEL(__memset_power6):					\
+  cfi_startproc;						\
+  LOCALENTRY(__memset_power6)
+
+#undef END_GEN_TB
+#define END_GEN_TB(name, mask)					\
+  cfi_endproc;							\
+  TRACEBACK_MASK(__memset_power6,mask)				\
+  END_2(__memset_power6)
 
 #undef libc_hidden_builtin_def
 #define libc_hidden_builtin_def(name)

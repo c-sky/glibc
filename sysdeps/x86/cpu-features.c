@@ -126,6 +126,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 
       if (family == 0x06)
 	{
+	  ecx = cpu_features->cpuid[COMMON_CPUID_INDEX_1].ecx;
 	  model += extended_model;
 	  switch (model)
 	    {
@@ -138,6 +139,8 @@ init_cpu_features (struct cpu_features *cpu_features)
 
 	    case 0x57:
 	      /* Knights Landing.  Enable Silvermont optimizations.  */
+	      cpu_features->feature[index_arch_Prefer_No_VZEROUPPER]
+		|= bit_arch_Prefer_No_VZEROUPPER;
 
 	    case 0x5c:
 	    case 0x5f:
@@ -173,7 +176,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 	    default:
 	      /* Unknown family 0x06 processors.  Assuming this is one
 		 of Core i3/i5/i7 processors if AVX is available.  */
-	      if (!CPU_FEATURES_CPU_P (cpu_features, AVX))
+	      if ((ecx & bit_cpu_AVX) == 0)
 		break;
 
 	    case 0x1a:
@@ -212,7 +215,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 		 with stepping >= 4) to avoid TSX on kernels that weren't
 		 updated with the latest microcode package (which disables
 		 broken feature by default).  */
-	      cpu_features->cpuid[index_cpu_RTM].reg_RTM &= ~bit_cpu_RTM;
+	      cpu_features->cpuid[COMMON_CPUID_INDEX_7].ebx &= ~(bit_cpu_RTM);
 	      break;
 	    }
 	}
@@ -222,16 +225,6 @@ init_cpu_features (struct cpu_features *cpu_features)
       if (CPU_FEATURES_ARCH_P (cpu_features, AVX2_Usable))
 	cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
 	  |= bit_arch_AVX_Fast_Unaligned_Load;
-
-      /* Since AVX512ER is unique to Xeon Phi, set Prefer_No_VZEROUPPER
-         if AVX512ER is available.  Don't use AVX512 to avoid lower CPU
-	 frequency if AVX512ER isn't available.  */
-      if (CPU_FEATURES_CPU_P (cpu_features, AVX512ER))
-	cpu_features->feature[index_arch_Prefer_No_VZEROUPPER]
-	  |= bit_arch_Prefer_No_VZEROUPPER;
-      else
-	cpu_features->feature[index_arch_Prefer_No_AVX512]
-	  |= bit_arch_Prefer_No_AVX512;
 
       /* To avoid SSE transition penalty, use _dl_runtime_resolve_slow.
          If XGETBV suports ECX == 1, use _dl_runtime_resolve_opt.  */

@@ -79,7 +79,7 @@ test_da_DK (void)
     }
 }
 
-int
+static int
 do_test (void)
 {
   int err = 0;
@@ -88,4 +88,5 @@ do_test (void)
   return err;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

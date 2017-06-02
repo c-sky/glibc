@@ -4,11 +4,7 @@ libc {
     __xpg_basename;
 
     # functions used in inline functions or macros
-    __strtod_internal; __strtof_internal; __strtold_internal;
-    __strtol_internal; __strtoll_internal;
-    __strtoul_internal; __strtoull_internal;
-    # functions formerly so used (compatibility symbols)
-    __strtoq_internal; __strtouq_internal;
+    __strto*_internal;
 
     # compatibility symbol
     __secure_getenv;

@@ -17,4 +17,3 @@
    <http://www.gnu.org/licenses/>.  */
 
 #define TEST_FINITE 0
-#define TEST_EXCEPTIONS 1

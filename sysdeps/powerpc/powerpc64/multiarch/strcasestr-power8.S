@@ -18,7 +18,21 @@
 
 #include <sysdep.h>
 
-#define STRCASESTR __strcasestr_power8
+#undef EALIGN
+#define EALIGN(name, alignt, words)				\
+  .section ".text";						\
+  ENTRY_2(__strcasestr_power8)					\
+  .align ALIGNARG(alignt);					\
+  EALIGN_W_##words;						\
+  BODY_LABEL(__strcasestr_power8):				\
+  cfi_startproc;						\
+  LOCALENTRY(__strcasestr_power8)
+
+#undef END
+#define END(name)						\
+  cfi_endproc;							\
+  TRACEBACK(__strcasestr_power8)				\
+  END_2(__strcasestr_power8)
 
 #undef libc_hidden_builtin_def
 #define libc_hidden_builtin_def(name)
@@ -30,6 +44,6 @@
 /* strnlen is used to check if len of r3 is more than r4.  */
 #define STRNLEN __strnlen_power7
 /* strchr is used to check if first char of r4 is present in r3.  */
-#define STRCHR __strchr_power8
+#define STRCHR __strchr_power7
 
 #include <sysdeps/powerpc/powerpc64/power8/strcasestr.S>

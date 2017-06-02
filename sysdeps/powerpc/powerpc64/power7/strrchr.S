@@ -19,13 +19,8 @@
 #include <sysdep.h>
 
 /* int [r3] strrchr (char *s [r3], int c [r4])  */
-
-#ifndef STRRCHR
-# define STRRCHR strrchr
-#endif
-
 	.machine  power7
-ENTRY (STRRCHR)
+ENTRY (strrchr)
 	CALL_MCOUNT 2
 	dcbt	0,r3
 	clrrdi	r8,r3,3	      /* Align the address to doubleword boundary.  */
@@ -255,6 +250,6 @@ L(done_null):
 	srdi	r0,r0,3	      /* Convert trailing zeros to bytes.  */
 	add	r3,r8,r0      /* Return address of the matching null byte.  */
 	blr
-END (STRRCHR)
+END (strrchr)
 weak_alias (strrchr, rindex)
 libc_hidden_builtin_def (strrchr)

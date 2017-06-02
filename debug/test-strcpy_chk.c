@@ -55,9 +55,8 @@ simple_strcpy_chk (char *dst, const char *src, size_t len)
 #include <signal.h>
 
 static int test_main (void);
-#define TEST_FUNCTION test_main
-#include <support/test-driver.c>
-#include <support/support.h>
+#define TEST_FUNCTION test_main ()
+#include "../test-skeleton.c"
 
 volatile int chk_fail_ok;
 jmp_buf chk_fail_buf;

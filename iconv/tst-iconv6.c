@@ -22,7 +22,6 @@
 #include <inttypes.h>
 #include <iconv.h>
 #include <byteswap.h>
-#include <endian.h>
 
 static int
 do_test (void)

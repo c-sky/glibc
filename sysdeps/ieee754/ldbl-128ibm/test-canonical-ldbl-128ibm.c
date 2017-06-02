@@ -18,7 +18,7 @@
 
 #include <float.h>
 #include <math.h>
-#include <math_ldbl.h>
+#include <math_private.h>
 #include <stdbool.h>
 #include <stdio.h>
 

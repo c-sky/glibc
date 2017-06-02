@@ -26,7 +26,7 @@
 
 #include <bits/types.h>		/* For __mode_t and __dev_t.  */
 
-#ifdef __USE_XOPEN2K8
+#ifdef __USE_ATFILE
 # include <bits/types/struct_timespec.h>
 #endif
 

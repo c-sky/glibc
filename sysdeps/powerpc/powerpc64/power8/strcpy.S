@@ -19,18 +19,10 @@
 #include <sysdep.h>
 
 #ifdef USE_AS_STPCPY
-# ifndef STPCPY
-#   define FUNC_NAME __stpcpy
-# else
-#   define FUNC_NAME STPCPY
-# endif
+# define FUNC_NAME __stpcpy
 #else
-# ifndef STRCPY
-#  define FUNC_NAME strcpy
-# else
-#  define FUNC_NAME STRCPY
-# endif
-#endif  /* !USE_AS_STPCPY  */
+# define FUNC_NAME strcpy
+#endif
 
 /* Implements the function
 

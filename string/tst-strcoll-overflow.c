@@ -30,7 +30,7 @@
    64-bit.  */
 #define SIZE 0x40000000ul
 
-int
+static int
 do_test (void)
 {
   TEST_VERIFY_EXIT (setlocale (LC_COLLATE, "en_GB.UTF-8") != NULL);

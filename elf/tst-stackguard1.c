@@ -17,7 +17,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
-#include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -186,20 +185,12 @@ do_test (void)
 #define CMDLINE_OPTIONS	\
   { "command", required_argument, NULL, OPT_COMMAND },  \
   { "child", no_argument, NULL, OPT_CHILD },
-
-static void __attribute__((used))
-cmdline_process_function (int c)
-{
-  switch (c)
-    {
-      case OPT_COMMAND:
-        command = optarg;
-        break;
-      case OPT_CHILD:
-        child = true;
-        break;
-    }
-}
-#define CMDLINE_PROCESS	cmdline_process_function
-
-#include <support/test-driver.c>
+#define CMDLINE_PROCESS	\
+  case OPT_COMMAND:	\
+    command = optarg;	\
+    break;		\
+  case OPT_CHILD:	\
+    child = true;	\
+    break;
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

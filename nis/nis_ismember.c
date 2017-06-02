@@ -146,4 +146,3 @@ nis_ismember (const_nis_name principal, const_nis_name group)
   else
     return FALSE;
 }
-libnsl_hidden_nolink_def (nis_ismember, GLIBC_2_1)

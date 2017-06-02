@@ -18,7 +18,6 @@
 
 #include <mcheck.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/resource.h>
 #include <wchar.h>
 

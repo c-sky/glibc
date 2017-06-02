@@ -34,13 +34,8 @@
 /* 32-bit SPARC kernels do not support
    futex_atomic_cmpxchg_inatomic.  */
 #if !defined __arch64__ && !defined __sparc_v9__
+# undef __ASSUME_REQUEUE_PI
 # undef __ASSUME_SET_ROBUST_LIST
-#endif
-
-#if !defined __arch64__
-# undef __ASSUME_ACCEPT_SYSCALL
-# undef __ASSUME_CONNECT_SYSCALL
-# undef __ASSUME_RECVFROM_SYSCALL
 #endif
 
 /* sparc only supports ipc syscall.  */

@@ -22,11 +22,10 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wordexp.h>
-#include <libc-pointer-arith.h>
+#include <libc-internal.h>
 
 #define IFS " \n\t"
 

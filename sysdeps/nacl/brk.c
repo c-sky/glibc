@@ -17,6 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <libc-internal.h>
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sys/param.h>

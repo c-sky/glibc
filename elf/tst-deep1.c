@@ -32,4 +32,5 @@ do_test (void)
   return foo () + f ();
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

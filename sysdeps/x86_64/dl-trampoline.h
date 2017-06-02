@@ -129,20 +129,19 @@ _dl_runtime_resolve_opt:
 	# YMM state isn't in use.
 	PRESERVE_BND_REGS_PREFIX
 	jz _dl_runtime_resolve_sse_vex
-# elif VEC_SIZE == 16
+# elif VEC_SIZE == 64
 	# For ZMM registers, check if YMM state and ZMM state are in
 	# use.
 	andl $(bit_YMM_state | bit_ZMM0_15_state), %r11d
 	cmpl $bit_YMM_state, %r11d
-	# Preserve %zmm0 - %zmm7 registers if ZMM state is in use.
+	# Preserve %xmm0 - %xmm7 registers with the zero upper 384 bits if
+	# neither YMM state nor ZMM state are in use.
 	PRESERVE_BND_REGS_PREFIX
-	jg _dl_runtime_resolve_avx512
+	jl _dl_runtime_resolve_sse_vex
 	# Preserve %ymm0 - %ymm7 registers with the zero upper 256 bits if
 	# ZMM state isn't in use.
 	PRESERVE_BND_REGS_PREFIX
 	je _dl_runtime_resolve_avx
-	# Preserve %xmm0 - %xmm7 registers with the zero upper 384 bits if
-	# neither YMM state nor ZMM state are in use.
 # else
 #  error Unsupported VEC_SIZE!
 # endif

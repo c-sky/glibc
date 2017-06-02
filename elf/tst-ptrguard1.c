@@ -25,12 +25,6 @@
 #include <tls.h>
 #include <unistd.h>
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-/* Requires _GNU_SOURCE  */
-#include <getopt.h>
-
 #ifndef POINTER_CHK_GUARD
 extern uintptr_t __pointer_chk_guard;
 # define POINTER_CHK_GUARD __pointer_chk_guard
@@ -197,21 +191,12 @@ do_test (void)
 #define CMDLINE_OPTIONS	\
   { "command", required_argument, NULL, OPT_COMMAND },  \
   { "child", no_argument, NULL, OPT_CHILD },
-
-static void __attribute((used))
-cmdline_process_function (int c)
-{
-  switch (c)
-    {
-      case OPT_COMMAND:
-        command = optarg;
-        break;
-      case OPT_CHILD:
-        child = true;
-        break;
-    }
-}
-
-#define CMDLINE_PROCESS	cmdline_process_function
-
-#include <support/test-driver.c>
+#define CMDLINE_PROCESS	\
+  case OPT_COMMAND:	\
+    command = optarg;	\
+    break;		\
+  case OPT_CHILD:	\
+    child = true;	\
+    break;
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

@@ -1,7 +1,6 @@
 /* getopt_long and getopt_long_only entry points for GNU getopt.
    Copyright (C) 1987-2017 Free Software Foundation, Inc.
-   This file is part of the GNU C Library and is also part of gnulib.
-   Patches to this file should be submitted to both projects.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,23 +16,57 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LIBC
-# include <config.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-#include "getopt.h"
+#ifdef _LIBC
+# include <getopt.h>
+#else
+# include "getopt.h"
+#endif
 #include "getopt_int.h"
 
+#include <stdio.h>
+
+/* Comment out all this code if we are using the GNU C Library, and are not
+   actually compiling the library itself.  This code is part of the GNU C
+   Library, but also included in many other GNU distributions.  Compiling
+   and linking in this code is a waste when using the GNU C library
+   (especially if it is a shared library).  Rather than having every GNU
+   program understand `configure --with-gnu-libc' and omit the object files,
+   it is simpler to just do this in the source for each such file.  */
+
+#define GETOPT_INTERFACE_VERSION 2
+#if !defined _LIBC && defined __GLIBC__ && __GLIBC__ >= 2
+#include <gnu-versions.h>
+#if _GNU_GETOPT_INTERFACE_VERSION == GETOPT_INTERFACE_VERSION
+#define ELIDE_CODE
+#endif
+#endif
+
+#ifndef ELIDE_CODE
+
+
+/* This needs to come after some library #include
+   to get __GNU_LIBRARY__ defined.  */
+#ifdef __GNU_LIBRARY__
+#include <stdlib.h>
+#endif
+
+#ifndef	NULL
+#define NULL 0
+#endif
+
 int
-getopt_long (int argc, char *__getopt_argv_const *argv, const char *options,
+getopt_long (int argc, char *const *argv, const char *options,
 	     const struct option *long_options, int *opt_index)
 {
-  return _getopt_internal (argc, (char **) argv, options, long_options,
-			   opt_index, 0, 0);
+  return _getopt_internal (argc, argv, options, long_options, opt_index, 0, 0);
 }
 
 int
-_getopt_long_r (int argc, char **argv, const char *options,
+_getopt_long_r (int argc, char *const *argv, const char *options,
 		const struct option *long_options, int *opt_index,
 		struct _getopt_data *d)
 {
@@ -47,16 +80,14 @@ _getopt_long_r (int argc, char **argv, const char *options,
    instead.  */
 
 int
-getopt_long_only (int argc, char *__getopt_argv_const *argv,
-		  const char *options,
+getopt_long_only (int argc, char *const *argv, const char *options,
 		  const struct option *long_options, int *opt_index)
 {
-  return _getopt_internal (argc, (char **) argv, options, long_options,
-			   opt_index, 1, 0);
+  return _getopt_internal (argc, argv, options, long_options, opt_index, 1, 0);
 }
 
 int
-_getopt_long_only_r (int argc, char **argv, const char *options,
+_getopt_long_only_r (int argc, char *const *argv, const char *options,
 		     const struct option *long_options, int *opt_index,
 		     struct _getopt_data *d)
 {
@@ -64,11 +95,11 @@ _getopt_long_only_r (int argc, char **argv, const char *options,
 			     1, d, 0);
 }
 
+#endif	/* Not ELIDE_CODE.  */
 
 #ifdef TEST
 
 #include <stdio.h>
-#include <stdlib.h>
 
 int
 main (int argc, char **argv)
@@ -80,7 +111,7 @@ main (int argc, char **argv)
     {
       int this_option_optind = optind ? optind : 1;
       int option_index = 0;
-      static const struct option long_options[] =
+      static struct option long_options[] =
       {
 	{"add", 1, 0, 0},
 	{"append", 0, 0, 0},
@@ -130,11 +161,11 @@ main (int argc, char **argv)
 	  break;
 
 	case 'c':
-	  printf ("option c with value '%s'\n", optarg);
+	  printf ("option c with value `%s'\n", optarg);
 	  break;
 
 	case 'd':
-	  printf ("option d with value '%s'\n", optarg);
+	  printf ("option d with value `%s'\n", optarg);
 	  break;
 
 	case '?':

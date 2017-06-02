@@ -136,5 +136,4 @@ allow MSG_*
 allow PF_*
 allow SCM_*
 allow SHUT_*
-allow *_t
 #endif

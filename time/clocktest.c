@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <stdint.h>
 
 volatile int gotit = 0;
 

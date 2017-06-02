@@ -21,11 +21,9 @@
 /* int [r3] memcmp (const char *s1 [r3],
 		    const char *s2 [r4],
 		    size_t size [r5])  */
-#ifndef MEMCMP
-# define MEMCMP memcmp
-#endif
+
 	.machine power7
-EALIGN (MEMCMP, 4, 0)
+EALIGN (memcmp, 4, 0)
 	CALL_MCOUNT 3
 
 #define rRTN		r3
@@ -1056,6 +1054,6 @@ L(duzeroLength):
 	li	rRTN, 0
 	blr
 
-END (MEMCMP)
+END (memcmp)
 libc_hidden_builtin_def (memcmp)
 weak_alias (memcmp, bcmp)

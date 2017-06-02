@@ -94,7 +94,7 @@ static name_database *service_table;
 static name_database_entry *defconfig_entries;
 
 
-#if defined USE_NSCD && (!defined DO_STATIC_NSS || defined SHARED)
+#ifdef USE_NSCD
 /* Nonzero if this is the nscd process.  */
 static bool is_nscd;
 /* The callback passed to the init functions when nscd is used.  */

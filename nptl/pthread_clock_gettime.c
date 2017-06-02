@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <time.h>
+#include <libc-internal.h>
 #include "pthreadP.h"
 
 

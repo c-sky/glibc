@@ -23,14 +23,10 @@
 
 #include <sysdep.h>
 
-#ifndef STRCMP
-# define STRCMP strcmp
-#endif
-
 /* int [r3] strcmp (const char *s1 [r3], const char *s2 [r4])  */
 
 	.machine	power7
-EALIGN (STRCMP, 4, 0)
+EALIGN (strcmp, 4, 0)
 	CALL_MCOUNT 2
 
 	or r9, r3, r4
@@ -164,5 +160,5 @@ L(diffOfNULL):
 	extsw r3, r10		/* sign extend result  */
 	blr			/* return  */
 
-END (STRCMP)
+END (strcmp)
 libc_hidden_builtin_def (strcmp)

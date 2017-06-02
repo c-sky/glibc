@@ -58,7 +58,7 @@ test (const char *locale)
 }
 
 
-int
+static int
 do_test (void)
 {
   int result = 0;
@@ -70,4 +70,5 @@ do_test (void)
   return result;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

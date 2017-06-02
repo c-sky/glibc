@@ -20,12 +20,8 @@
 #include <sysdep.h>
 
 /* int [r3] memchr (char *s [r3], int byte [r4], int size [r5])  */
-
-#ifndef MEMCHR
-# define MEMCHR __memchr
-#endif
 	.machine  power7
-ENTRY (MEMCHR)
+ENTRY (__memchr)
 	CALL_MCOUNT 3
 	dcbt	0,r3
 	clrrdi  r8,r3,3
@@ -194,6 +190,6 @@ L(small_range):
 	bne	cr6,L(done)
 	blr
 
-END (MEMCHR)
+END (__memchr)
 weak_alias (__memchr, memchr)
 libc_hidden_builtin_def (memchr)

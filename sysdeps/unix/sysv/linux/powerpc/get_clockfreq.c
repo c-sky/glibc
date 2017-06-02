@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <libc-internal.h>
 #include <sysdep.h>
 #include <libc-vdso.h>
 #include <not-cancel.h>

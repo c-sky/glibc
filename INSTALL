@@ -146,12 +146,6 @@ will be used, and CFLAGS sets optimization options for the compiler.
      of routines called directly from assembler are excluded from this
      protection.
 
-'--enable-bind-now'
-     Disable lazy binding for installed shared objects.  This provides
-     additional security hardening because it enables full RELRO and a
-     read-only global offset table (GOT), at the cost of slightly
-     increased program load times.
-
 '--enable-pt_chown'
      The file 'pt_chown' is a helper binary for 'grantpt' (*note
      Pseudo-Terminals: Allocation.) that is installed setuid root to fix
@@ -195,12 +189,6 @@ will be used, and CFLAGS sets optimization options for the compiler.
           tunables.  This frontend allows users to specify tunables as a
           colon-separated list in a single environment variable
           'GLIBC_TUNABLES'.
-
-'--enable-obsolete-nsl'
-     By default, libnsl is only built as shared library for backward
-     compatibility and the NSS modules libnss_compat, libnss_nis and
-     libnss_nisplus are not built at all.  Use this option to enable
-     libnsl with all depending NSS modules and header files.
 
 '--build=BUILD-SYSTEM'
 '--host=HOST-SYSTEM'
@@ -501,15 +489,13 @@ Specific advice for GNU/Linux systems
 
 If you are installing the GNU C Library on GNU/Linux systems, you need
 to have the header files from a 3.2 or newer kernel around for
-reference.  (For the ia64 architecture, you need version 3.2.18 or newer
-because this is the first version with support for the 'accept4' system
-call.)  These headers must be installed using 'make headers_install';
-the headers present in the kernel source directory are not suitable for
-direct use by the GNU C Library.  You do not need to use that kernel,
-just have its headers installed where the GNU C Library can access them,
-referred to here as INSTALL-DIRECTORY.  The easiest way to do this is to
-unpack it in a directory such as '/usr/src/linux-VERSION'.  In that
-directory, run 'make headers_install
+reference.  These headers must be installed using 'make
+headers_install'; the headers present in the kernel source directory are
+not suitable for direct use by the GNU C Library.  You do not need to
+use that kernel, just have its headers installed where the GNU C Library
+can access them, referred to here as INSTALL-DIRECTORY.  The easiest way
+to do this is to unpack it in a directory such as
+'/usr/src/linux-VERSION'.  In that directory, run 'make headers_install
 INSTALL_HDR_PATH=INSTALL-DIRECTORY'.  Finally, configure the GNU C
 Library with the option '--with-headers=INSTALL-DIRECTORY/include'.  Use
 the most recent kernel you can get your hands on.  (If you are

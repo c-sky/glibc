@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 /* Dummy string is used to match strptime's %s specifier.  */
 

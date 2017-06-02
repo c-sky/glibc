@@ -27,10 +27,6 @@
    fallback to default.  */
 #define ITERATIONS	64
 
-#ifndef STRCASESTR
-# define STRCASESTR __strcasestr
-#endif
-
 #ifndef STRLEN
 /* For builds without IFUNC support, local calls should be made to internal
    GLIBC symbol (created by libc_hidden_builtin_def).  */
@@ -85,7 +81,7 @@
 /* TODO: change this to .machine power8 when the minimum required binutils
    allows it.  */
 	.machine  power7
-EALIGN (STRCASESTR, 4, 0)
+EALIGN (__strcasestr, 4, 0)
 	CALL_MCOUNT 2
 	mflr	r0			/* Load link register LR to r0.  */
 	std	r31, -8(r1)		/* Save callers register r31.  */
@@ -531,7 +527,7 @@ L(end):
 	cfi_restore(r31)
 	mtlr	r0		/* Branch to link register.  */
 	blr
-END (STRCASESTR)
+END (__strcasestr)
 
 weak_alias (__strcasestr, strcasestr)
 libc_hidden_def (__strcasestr)

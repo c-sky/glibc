@@ -26,6 +26,9 @@
 /* There are no hardware capabilities defined.  */
 #define _dl_hwcap_string(idx) ""
 
+/* There are no different platforms defined.  */
+#define _dl_platform_string(idx) ""
+
 /* By default there is no important hardware capability.  */
 #define HWCAP_IMPORTANT (0)
 

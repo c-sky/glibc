@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 #define FAIL() \
   do {							\

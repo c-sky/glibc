@@ -16,12 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _X86_64_ATOMIC_MACHINE_H
-#define _X86_64_ATOMIC_MACHINE_H 1
-
 #include <stdint.h>
-#include <tls.h>                   /* For tcbhead_t.  */
-#include <libc-pointer-arith.h>    /* For cast_to_integer.  */
+#include <tls.h>	/* For tcbhead_t.  */
+#include <libc-internal.h>
+
 
 typedef int8_t atomic8_t;
 typedef uint8_t uatomic8_t;
@@ -477,5 +475,3 @@ typedef uintmax_t uatomic_max_t;
     __asm __volatile (LOCK_PREFIX "orl $0, (%%rsp)" ::: "memory")
 #define atomic_read_barrier() __asm ("" ::: "memory")
 #define atomic_write_barrier() __asm ("" ::: "memory")
-
-#endif /* atomic-machine.h */

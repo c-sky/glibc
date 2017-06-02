@@ -26,7 +26,10 @@ seteuid (uid_t uid)
   int result;
 
   if (uid == (uid_t) ~0)
-    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
 
 #ifdef __NR_setresuid32
   result = INLINE_SETXID_SYSCALL (setresuid32, 3, -1, uid, -1);

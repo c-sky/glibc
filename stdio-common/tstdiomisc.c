@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 static int
 t1 (void)

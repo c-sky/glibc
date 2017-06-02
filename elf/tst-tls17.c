@@ -1,5 +1,4 @@
 #include <dlfcn.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 static int
@@ -25,4 +24,5 @@ do_test (void)
   return 0;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

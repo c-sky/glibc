@@ -32,11 +32,9 @@
 #include <support/test-driver.h>
 #include <support/xsocket.h>
 #include <support/xthread.h>
-#include <support/xunistd.h>
-#include <sys/uio.h>
 #include <unistd.h>
 
-/* Response builder.  */
+/* Response builder. */
 
 enum
   {
@@ -430,7 +428,6 @@ struct query_info
   char qname[MAXDNAME];
   uint16_t qclass;
   uint16_t qtype;
-  struct resolv_edns_info edns;
 };
 
 /* Update *INFO from the specified DNS packet.  */
@@ -438,26 +435,10 @@ static void
 parse_query (struct query_info *info,
              const unsigned char *buffer, size_t length)
 {
-  HEADER hd;
-  _Static_assert (sizeof (hd) == 12, "DNS header size");
-  if (length < sizeof (hd))
+  if (length < 12)
     FAIL_EXIT1 ("malformed DNS query: too short: %zu bytes", length);
-  memcpy (&hd, buffer, sizeof (hd));
 
-  if (ntohs (hd.qdcount) != 1)
-    FAIL_EXIT1 ("malformed DNS query: wrong question count: %d",
-                (int) ntohs (hd.qdcount));
-  if (ntohs (hd.ancount) != 0)
-    FAIL_EXIT1 ("malformed DNS query: wrong answer count: %d",
-                (int) ntohs (hd.ancount));
-  if (ntohs (hd.nscount) != 0)
-    FAIL_EXIT1 ("malformed DNS query: wrong authority count: %d",
-                (int) ntohs (hd.nscount));
-  if (ntohs (hd.arcount) > 1)
-    FAIL_EXIT1 ("malformed DNS query: wrong additional count: %d",
-                (int) ntohs (hd.arcount));
-
-  int ret = dn_expand (buffer, buffer + length, buffer + sizeof (hd),
+  int ret = dn_expand (buffer, buffer + length, buffer + 12,
                        info->qname, sizeof (info->qname));
   if (ret < 0)
     FAIL_EXIT1 ("malformed DNS query: cannot uncompress QNAME");
@@ -475,37 +456,6 @@ parse_query (struct query_info *info,
   memcpy (&qtype_qclass, buffer + 12 + ret, sizeof (qtype_qclass));
   info->qclass = ntohs (qtype_qclass.qclass);
   info->qtype = ntohs (qtype_qclass.qtype);
-
-  memset (&info->edns, 0, sizeof (info->edns));
-  if (ntohs (hd.arcount) > 0)
-    {
-      /* Parse EDNS record.  */
-      struct __attribute__ ((packed, aligned (1)))
-      {
-        uint8_t root;
-        uint16_t rtype;
-        uint16_t payload;
-        uint8_t edns_extended_rcode;
-        uint8_t edns_version;
-        uint16_t flags;
-        uint16_t rdatalen;
-      } rr;
-      _Static_assert (sizeof (rr) == 11, "EDNS record size");
-
-      if (remaining < 4 + sizeof (rr))
-        FAIL_EXIT1 ("mailformed DNS query: no room for EDNS record");
-      memcpy (&rr, buffer + 12 + ret + 4, sizeof (rr));
-      if (rr.root != 0)
-        FAIL_EXIT1 ("malformed DNS query: invalid OPT RNAME: %d\n", rr.root);
-      if (rr.rtype != htons (41))
-        FAIL_EXIT1 ("malformed DNS query: invalid OPT type: %d\n",
-                    ntohs (rr.rtype));
-      info->edns.active = true;
-      info->edns.extended_rcode = rr.edns_extended_rcode;
-      info->edns.version = rr.edns_version;
-      info->edns.flags = ntohs (rr.flags);
-      info->edns.payload_size = ntohs (rr.payload);
-    }
 }
 
 
@@ -635,7 +585,6 @@ server_thread_udp_process_one (struct resolv_test *obj, int server_index)
       .query_length = length,
       .server_index = server_index,
       .tcp = false,
-      .edns = qinfo.edns,
     };
   struct resolv_response_builder *b = response_builder_allocate (query, length);
   obj->config.response_callback
@@ -871,7 +820,6 @@ server_thread_tcp_client (void *arg)
           .query_length = query_length,
           .server_index = closure->server_index,
           .tcp = true,
-          .edns = qinfo.edns,
         };
       struct resolv_response_builder *b = response_builder_allocate
         (query_buffer, query_length);
@@ -912,7 +860,7 @@ server_thread_tcp_client (void *arg)
         break;
     }
 
-  xclose (closure->client_socket);
+  close (closure->client_socket);
   free (closure);
   return NULL;
 }
@@ -933,7 +881,7 @@ server_thread_tcp (struct resolv_test *obj, int server_index)
       if (obj->termination_requested)
         {
           xpthread_mutex_unlock (&obj->lock);
-          xclose (client_socket);
+          close (client_socket);
           break;
         }
       xpthread_mutex_unlock (&obj->lock);
@@ -993,8 +941,8 @@ make_server_sockets (struct resolv_test_server *server)
              next local UDP address randomly.  */
           if (errno == EADDRINUSE)
             {
-              xclose (server->socket_udp);
-              xclose (server->socket_tcp);
+              close (server->socket_udp);
+              close (server->socket_tcp);
               continue;
             }
           FAIL_EXIT1 ("TCP bind: %m");
@@ -1077,7 +1025,7 @@ resolv_test_start (struct resolv_redirect_config config)
       struct resolv_test_server *server = obj->servers + server_index;
       if (config.servers[server_index].disable_udp)
         {
-          xclose (server->socket_udp);
+          close (server->socket_udp);
           server->socket_udp = -1;
         }
       else if (!config.single_thread_udp)
@@ -1085,7 +1033,7 @@ resolv_test_start (struct resolv_redirect_config config)
                                                   server_thread_udp);
       if (config.servers[server_index].disable_tcp)
         {
-          xclose (server->socket_tcp);
+          close (server->socket_tcp);
           server->socket_tcp = -1;
         }
       else
@@ -1166,7 +1114,7 @@ resolv_test_end (struct resolv_test *obj)
           xsendto (sock, "", 1, 0,
                    (struct sockaddr *) &obj->servers[server_index].address,
                    sizeof (obj->servers[server_index].address));
-          xclose (sock);
+          close (sock);
         }
       if (!obj->config.servers[server_index].disable_tcp)
         {
@@ -1174,7 +1122,7 @@ resolv_test_end (struct resolv_test *obj)
           xconnect (sock,
                     (struct sockaddr *) &obj->servers[server_index].address,
                     sizeof (obj->servers[server_index].address));
-          xclose (sock);
+          close (sock);
         }
     }
 
@@ -1189,12 +1137,12 @@ resolv_test_end (struct resolv_test *obj)
         {
           if (!obj->config.single_thread_udp)
             xpthread_join (obj->servers[server_index].thread_udp);
-          xclose (obj->servers[server_index].socket_udp);
+          close (obj->servers[server_index].socket_udp);
         }
       if (!obj->config.servers[server_index].disable_tcp)
         {
           xpthread_join (obj->servers[server_index].thread_tcp);
-          xclose (obj->servers[server_index].socket_tcp);
+          close (obj->servers[server_index].socket_tcp);
         }
     }
 

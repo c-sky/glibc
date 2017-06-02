@@ -29,14 +29,10 @@
 
 /* int [r3] strlen (char *s [r3])  */
 
-#ifndef STRLEN
-# define STRLEN strlen
-#endif
-
 /* TODO: change this to .machine power8 when the minimum required binutils
    allows it.  */
 	.machine  power7
-EALIGN (STRLEN, 4, 0)
+EALIGN (strlen, 4, 0)
 	CALL_MCOUNT 1
 	dcbt	0,r3
 	clrrdi	r4,r3,3	      /* Align the address to doubleword boundary.  */
@@ -297,5 +293,5 @@ L(vmx_zero):
 	add	r3,r5,r0      /* Compute final length.  */
 	blr
 
-END (STRLEN)
+END (strlen)
 libc_hidden_builtin_def (strlen)

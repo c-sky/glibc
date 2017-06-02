@@ -18,7 +18,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/reboot.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 /* Reboot the system.  */
 int

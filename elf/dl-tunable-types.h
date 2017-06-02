@@ -21,6 +21,8 @@
 # define _TUNABLE_TYPES_H_
 #include <stddef.h>
 
+typedef void (*tunable_callback_t) (void *);
+
 typedef enum
 {
   TUNABLE_TYPE_INT_32,
@@ -40,8 +42,6 @@ typedef union
   int64_t numval;
   const char *strval;
 } tunable_val_t;
-
-typedef void (*tunable_callback_t) (tunable_val_t *);
 
 /* Security level for tunables.  This decides what to do with individual
    tunables for AT_SECURE binaries.  */

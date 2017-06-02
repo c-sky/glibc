@@ -19,7 +19,20 @@
 #include <sysdep.h>
 
 #ifdef SHARED
-# define STRCHR __strchr_ppc
+# undef ENTRY
+# define ENTRY(name)						\
+  .section ".text";						\
+  ENTRY_2(__strchr_ppc)						\
+  .align ALIGNARG(2);						\
+  BODY_LABEL(__strchr_ppc):					\
+  cfi_startproc;						\
+  LOCALENTRY(__strchr_ppc)
+
+# undef END
+# define END(name)						\
+  cfi_endproc;							\
+  TRACEBACK(__strchr_ppc)					\
+  END_2(__strchr_ppc)
 
 # undef libc_hidden_builtin_def
 # define libc_hidden_builtin_def(name)				\

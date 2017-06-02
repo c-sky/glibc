@@ -536,7 +536,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		      }
 		    else
 		      {
-			namebuf = __strndup (name, scope_delim - name);
+			namebuf = strndup (name, scope_delim - name);
 			if (namebuf == NULL)
 			  {
 			    assert (!malloc_name);
@@ -1141,7 +1141,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		  malloc_canonbuf = false;
 		else
 		  {
-		    canon = __strdup (canon);
+		    canon = strdup (canon);
 		    if (canon == NULL)
 		      {
 			result = -EAI_MEMORY;
@@ -2472,7 +2472,7 @@ getaddrinfo (const char *name, const char *service,
 		  close_retry:
 		    close_not_cancel_no_status (fd);
 		  af = q->ai_family;
-		  fd = __socket (af, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_IP);
+		  fd = __socket (af, SOCK_DGRAM, IPPROTO_IP);
 		}
 	      else
 		{

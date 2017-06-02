@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 int
 main(int arc, char *argv[])

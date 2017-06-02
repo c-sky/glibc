@@ -869,7 +869,8 @@ extern int setlogin (const char *__name) __THROW __nonnull ((1));
 /* Get definitions and prototypes for functions to process the
    arguments in ARGV (ARGC of them, minus the program name) for
    options given in OPTS.  */
-# include <bits/getopt_posix.h>
+# define __need_getopt
+# include <getopt.h>
 #endif
 
 

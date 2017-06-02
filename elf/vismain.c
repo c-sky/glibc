@@ -29,9 +29,10 @@
 /* Prototype for our test function.  */
 extern int do_test (void);
 
+#define TEST_FUNCTION do_test ()
 
 /* This defines the `main' function and some more.  */
-#include <support/test-driver.c>
+#include <test-skeleton.c>
 
 
 /* Prototypes for local functions.  */

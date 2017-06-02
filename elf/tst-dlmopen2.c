@@ -66,4 +66,5 @@ round %d, namespace %d: duplicate allocate of namespace %ld",
   return result;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

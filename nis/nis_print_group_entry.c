@@ -171,4 +171,3 @@ nis_print_group_entry (const_nis_name group)
       nis_freeresult (res);
     }
 }
-libnsl_hidden_nolink_def (nis_print_group_entry, GLIBC_2_1)

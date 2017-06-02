@@ -47,12 +47,7 @@ testout=${common_objpfx}posix/globtest-out
 rm -rf $testdir $testout
 mkdir $testdir
 
-cleanup() {
-    chmod 777 $testdir/noread
-    rm -fr $testdir $testout
-}
-
-trap cleanup 0 HUP INT QUIT TERM
+trap 'chmod 777 $testdir/noread; rm -fr $testdir $testout' 1 2 3 15
 
 echo 1 > $testdir/file1
 echo 2 > $testdir/file2
@@ -816,6 +811,8 @@ if test $failed -ne 0; then
 fi
 
 if test $result -eq 0; then
+    chmod 777 $testdir/noread
+    rm -fr $testdir $testout
     echo "All OK." > $logfile
 fi
 

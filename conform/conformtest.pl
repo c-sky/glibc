@@ -7,11 +7,8 @@ use POSIX;
 $standard = "XOPEN2K8";
 $CC = "gcc";
 $tmpdir = "/tmp";
-$cross = "";
-$xfail_str = "";
 GetOptions ('headers=s' => \@headers, 'standard=s' => \$standard,
-	    'flags=s' => \$flags, 'cc=s' => \$CC, 'tmpdir=s' => \$tmpdir,
-	    'cross' => \$cross, 'xfail=s' => \$xfail_str);
+	    'flags=s' => \$flags, 'cc=s' => \$CC, 'tmpdir=s' => \$tmpdir);
 @headers = split(/,/,join(',',@headers));
 
 # List of the headers we are testing.
@@ -193,8 +190,6 @@ sub runtest
       }
       note_error($xfail);
       $result = 1;
-    } elsif ($cross) {
-      printf (" SKIP\n");
     } else {
       # Now run the program.  If the exit code is not zero something is wrong.
       $result = system "$fnamebase > $fnamebase.out2 2>&1";
@@ -352,15 +347,6 @@ while ($#headers >= 0) {
     if (/^xfail-/) {
       s/^xfail-//;
       $xfail = 1;
-    } elsif (/^xfail\[([^\]]*)\]-/) {
-      my($xfail_cond) = $1;
-      s/^xfail\[([^\]]*)\]-//;
-      # "xfail[cond]-" or "xfail[cond1|cond2|...]-" means a failure of
-      # the test is allowed if any of the listed conditions are in the
-      # --xfail command-line option argument.
-      if ($xfail_str =~ /\b($xfail_cond)\b/) {
-	$xfail = 1;
-      }
     }
     my($optional) = 0;
     if (/^optional-/) {
@@ -486,11 +472,11 @@ while ($#headers >= 0) {
 	}
 	print TESTFILE "# define conformtest_value ($s)\n";
 	print TESTFILE "#endif\n";
-	print TESTFILE "_Static_assert ((($symbol < 0) == conformtest_negative) && ($symbol == conformtest_value), \"value match inside and outside #if\");\n";
+	print TESTFILE "int main (void) { return !((($symbol < 0) == conformtest_negative) && ($symbol == conformtest_value)); }\n";
 	close (TESTFILE);
 
-	compiletest ($fnamebase, "Testing for #if usability of symbol $symbol",
-		     "Symbol \"$symbol\" not usable in #if.", $res, 0, $xfail);
+	runtest ($fnamebase, "Testing for #if usability of symbol $symbol",
+		 "Symbol \"$symbol\" not usable in #if.", $res, $xfail);
       }
 
       if (defined ($type) && ($res == 0 || !$optional)) {
@@ -517,12 +503,13 @@ while ($#headers >= 0) {
 	open (TESTFILE, ">$fnamebase.c");
 	print TESTFILE "$prepend";
 	print TESTFILE "#include <$h>\n";
-	print TESTFILE "_Static_assert ($symbol $op $value, \"value constraint\");\n";
+	# Negate the value since 0 means ok
+	print TESTFILE "int main (void) { return !($symbol $op $value); }\n";
 	close (TESTFILE);
 
-	$res = compiletest ($fnamebase, "Testing for value of symbol $symbol",
-			    "Symbol \"$symbol\" has not the right value.",
-			    $res, 0, $xfail);
+	$res = runtest ($fnamebase, "Testing for value of symbol $symbol",
+			"Symbol \"$symbol\" has not the right value.", $res,
+			$xfail);
       }
     } elsif (/^symbol *([a-zA-Z0-9_]*) *([A-Za-z0-9_-]*)?/) {
       my($symbol) = $1;
@@ -810,7 +797,7 @@ while ($#headers >= 0) {
       next acontrol if (/^#/);
       next acontrol if (/^[	]*$/);
 
-      s/^xfail(\[([^\]]*)\])?-//;
+      s/^xfail-//;
       s/^optional-//;
       if (/^element *({([^}]*)}|([^ ]*)) *({([^}]*)}|([^ ]*)) *([A-Za-z0-9_]*) *(.*)/) {
 	push @allow, $7;

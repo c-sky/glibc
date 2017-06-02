@@ -66,7 +66,6 @@
 
 #include "nsswitch.h"
 #include <arpa/inet.h>
-#include <arpa/nameser.h>
 
 /* Maximum number of aliases we allow.  */
 #define MAX_NR_ALIASES	48
@@ -92,6 +91,13 @@ typedef union querybuf
   HEADER hdr;
   u_char buf[MAXPACKET];
 } querybuf;
+
+/* These functions are defined in res_comp.c.  */
+#define NS_MAXCDNAME	255	/* maximum compressed domain name */
+extern int __ns_name_ntop (const u_char *, char *, size_t) __THROW;
+extern int __ns_name_unpack (const u_char *, const u_char *,
+			     const u_char *, u_char *, size_t) __THROW;
+
 
 /* Prototypes for local functions.  */
 static enum nss_status getanswer_r (const querybuf *answer, int anslen,
@@ -318,8 +324,11 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 
   while (--answer_count >= 0 && cp < end_of_message)
     {
-      int n = __ns_name_unpack (answer->buf, end_of_message, cp,
-				packtmp, sizeof packtmp);
+      int n = dn_expand (answer->buf, end_of_message, cp, bp, linebuflen);
+      int type, class;
+
+      n = __ns_name_unpack (answer->buf, end_of_message, cp,
+			    packtmp, sizeof packtmp);
       if (n != -1 && __ns_name_ntop (packtmp, bp, linebuflen) == -1)
 	{
 	  if (errno == EMSGSIZE)
@@ -341,7 +350,6 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 	  return NSS_STATUS_UNAVAIL;
 	}
 
-      int type, class;
       GETSHORT (type, cp);
       GETSHORT (class, cp);
       cp += INT32SZ;		/* TTL */

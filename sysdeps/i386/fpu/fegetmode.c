@@ -26,7 +26,7 @@ int
 fegetmode (femode_t *modep)
 {
   _FPU_GETCW (modep->__control_word);
-  if (HAS_CPU_FEATURE (SSE))
+  if ((GLRO(dl_hwcap) & HWCAP_I386_XMM) != 0)
     __asm__ ("stmxcsr %0" : "=m" (modep->__mxcsr));
   return 0;
 }

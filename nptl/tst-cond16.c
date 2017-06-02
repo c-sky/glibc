@@ -17,7 +17,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
-#include <limits.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -80,7 +79,7 @@ do_test (void)
   pthread_attr_t attr;
   int i, ret, sz;
   pthread_attr_init (&attr);
-  sz = sysconf (_SC_PAGESIZE);
+  sz = __getpagesize ();
   if (sz < PTHREAD_STACK_MIN)
 	  sz = PTHREAD_STACK_MIN;
   pthread_attr_setstacksize (&attr, sz);

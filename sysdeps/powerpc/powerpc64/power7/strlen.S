@@ -20,12 +20,8 @@
 #include <sysdep.h>
 
 /* int [r3] strlen (char *s [r3])  */
-
-#ifndef STRLEN
-# define STRLEN strlen
-#endif
 	.machine  power7
-ENTRY (STRLEN)
+ENTRY (strlen)
 	CALL_MCOUNT 1
 	dcbt	0,r3
 	clrrdi	r4,r3,3	      /* Align the address to doubleword boundary.  */
@@ -103,5 +99,5 @@ L(done):
 	srdi	r0,r0,3	      /* Convert leading/trailing zeros to bytes.  */
 	add	r3,r5,r0      /* Compute final length.  */
 	blr
-END (STRLEN)
+END (strlen)
 libc_hidden_builtin_def (strlen)

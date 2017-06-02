@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <stdint.h>
 #include <errno.h>
 
 /* Check fmemopen with user provided buffer open for write.  */

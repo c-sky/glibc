@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int
+static int
 do_test (void)
 {
   char str[] = "this is a test";
@@ -11,4 +11,5 @@ do_test (void)
   return 0;
 }
 
-#include <support/test-driver.c>
+#define TEST_FUNCTION do_test ()
+#include "../test-skeleton.c"

@@ -18,4 +18,3 @@
 
 #define TEST_FINITE 1
 #define TEST_ERRNO 0
-#define TEST_EXCEPTIONS 1

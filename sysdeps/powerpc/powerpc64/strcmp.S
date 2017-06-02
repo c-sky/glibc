@@ -22,11 +22,7 @@
 
 /* int [r3] strcmp (const char *s1 [r3], const char *s2 [r4])  */
 
-#ifndef STRCMP
-# define STRCMP strcmp
-#endif
-
-EALIGN (STRCMP, 4, 0)
+EALIGN (strcmp, 4, 0)
 	CALL_MCOUNT 2
 
 #define rTMP2	r0
@@ -176,5 +172,5 @@ L(u3):	sub	rRTN, rWORD1, rWORD2
 L(u4):	lbz	rWORD1, -1(rSTR1)
 	sub	rRTN, rWORD1, rWORD2
 	blr
-END (STRCMP)
+END (strcmp)
 libc_hidden_builtin_def (strcmp)

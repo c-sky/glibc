@@ -38,4 +38,3 @@ nis_rmdir (const_nis_name dir, const nis_server *server)
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_rmdir, GLIBC_2_1)

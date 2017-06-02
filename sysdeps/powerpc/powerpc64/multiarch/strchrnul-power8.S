@@ -18,7 +18,20 @@
 
 #include <sysdep.h>
 
-#define STRCHRNUL __strchrnul_power8
+#undef ENTRY
+#define ENTRY(name)						\
+  .section ".text";						\
+  ENTRY_2(__strchrnul_power8)					\
+  .align ALIGNARG(2);						\
+  BODY_LABEL(__strchrnul_power8):				\
+  cfi_startproc;						\
+  LOCALENTRY(__strchrnul_power8)
+
+#undef END
+#define END(name)						\
+  cfi_endproc;							\
+  TRACEBACK(__strchrnul_power8)					\
+  END_2(__strchrnul_power8)
 
 #undef libc_hidden_builtin_def
 #define libc_hidden_builtin_def(name)

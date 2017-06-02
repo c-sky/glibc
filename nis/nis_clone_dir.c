@@ -71,4 +71,3 @@ nis_clone_directory (const directory_obj *src, directory_obj *dest)
 
   return res;
 }
-libnsl_hidden_nolink_def(nis_clone_directory, GLIBC_2_1)

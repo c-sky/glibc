@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <string.h>
 #include <rpcsvc/nis.h>
-#include <libc-diag.h>
+#include <libc-internal.h>
 
 #include "nis_xdr.h"
 #include "nis_intern.h"
@@ -127,7 +127,7 @@ __create_ib_request (const_nis_name name, unsigned int flags)
 
   return ibreq;
 }
-libnsl_hidden_nolink_def (__create_ib_request, GLIBC_PRIVATE)
+libnsl_hidden_def (__create_ib_request)
 
 static const struct timeval RPCTIMEOUT = {10, 0};
 
@@ -200,7 +200,7 @@ __follow_path (char **tablepath, char **tableptr, struct ib_request *ibreq,
 
   return NIS_SUCCESS;
 }
-libnsl_hidden_nolink_def (__follow_path, GLIBC_PRIVATE)
+libnsl_hidden_def (__follow_path)
 
 
 nis_result *
@@ -552,7 +552,7 @@ nis_list (const_nis_name name, unsigned int flags,
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_list, GLIBC_2_1)
+libnsl_hidden_def (nis_list)
 
 nis_result *
 nis_add_entry (const_nis_name name, const nis_object *obj2, unsigned int flags)
@@ -613,7 +613,6 @@ nis_add_entry (const_nis_name name, const nis_object *obj2, unsigned int flags)
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_add_entry, GLIBC_2_1)
 
 nis_result *
 nis_modify_entry (const_nis_name name, const nis_object *obj2,
@@ -671,7 +670,6 @@ nis_modify_entry (const_nis_name name, const nis_object *obj2,
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_modify_entry, GLIBC_2_1)
 
 nis_result *
 nis_remove_entry (const_nis_name name, const nis_object *obj,
@@ -720,7 +718,6 @@ nis_remove_entry (const_nis_name name, const nis_object *obj,
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_remove_entry, GLIBC_2_1)
 
 nis_result *
 nis_first_entry (const_nis_name name)
@@ -758,7 +755,6 @@ nis_first_entry (const_nis_name name)
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_first_entry, GLIBC_2_1)
 
 nis_result *
 nis_next_entry (const_nis_name name, const netobj *cookie)
@@ -809,4 +805,3 @@ nis_next_entry (const_nis_name name, const netobj *cookie)
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_next_entry, GLIBC_2_1)

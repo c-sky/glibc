@@ -76,4 +76,3 @@ nis_checkpoint (const_nis_name dirname)
 
   return res;
 }
-libnsl_hidden_nolink_def (nis_checkpoint, GLIBC_2_1)
