@@ -1,0 +1,256 @@
+diff --git a/elf/Makefile b/elf/Makefile
+index 61abeb5..6cb4f08 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -149,7 +149,7 @@ tests-static = tst-tls1-static tst-tls2-static tst-stackguard1-static \
+ 	       tst-leaks1-static tst-array1-static tst-array5-static \
+ 	       tst-ptrguard1-static tst-dl-iter-static \
+ 	       tst-tlsalign-static tst-tlsalign-extern-static \
+-	       tst-linkall-static tst-env-setuid tst-env-setuid-tunables
++	       tst-linkall-static
+ ifeq (yes,$(build-shared))
+ tests-static += tst-tls9-static
+ tst-tls9-static-ENV = \
+@@ -177,7 +177,7 @@ tests += loadtest restest1 preloadtest loadfail multiload origtest resolvfail \
+ 	 tst-initorder tst-initorder2 tst-relsort1 tst-null-argv \
+ 	 tst-ptrguard1 tst-tlsalign tst-tlsalign-extern tst-nodelete-opened \
+ 	 tst-nodelete2 tst-audit11 tst-audit12 tst-dlsym-error tst-noload \
+-	 tst-latepthread tst-tls-manydynamic tst-nodelete-dlclose
++	 tst-latepthread tst-nodelete-dlclose
+ #	 reldep9
+ ifeq ($(build-hardcoded-path-in-tests),yes)
+ tests += tst-dlopen-aout
+diff --git a/io/Makefile b/io/Makefile
+index 333a049..5a0a6b2 100644
+--- a/io/Makefile
++++ b/io/Makefile
+@@ -71,8 +71,7 @@ tests		:= test-utime test-stat test-stat2 test-lfs tst-getcwd \
+ 		   tst-renameat tst-fchownat tst-fchmodat tst-faccessat \
+ 		   tst-symlinkat tst-linkat tst-readlinkat tst-mkdirat \
+ 		   tst-mknodat tst-mkfifoat tst-ttyname_r bug-ftw5 \
+-		   tst-posix_fallocate tst-posix_fallocate64 \
+-		   tst-fts tst-fts-lfs tst-open-tmpfile
++		   tst-fts tst-fts-lfs
+ 
+ ifeq ($(run-built-tests),yes)
+ tests-special += $(objpfx)ftwtest.out
+diff --git a/malloc/Makefile b/malloc/Makefile
+index e93b83b..547eb09 100644
+--- a/malloc/Makefile
++++ b/malloc/Makefile
+@@ -28,11 +28,11 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
+ 	 tst-mallocstate tst-mcheck tst-mallocfork tst-trim1 \
+ 	 tst-malloc-usable tst-realloc tst-posix_memalign \
+ 	 tst-pvalloc tst-memalign tst-mallopt tst-scratch_buffer \
+-	 tst-malloc-backtrace tst-malloc-thread-exit \
+-	 tst-malloc-thread-fail tst-malloc-fork-deadlock \
++	 tst-malloc-backtrace \
++	 tst-malloc-thread-fail \
+ 	 tst-mallocfork2 \
+ 	 tst-interpose-nothread \
+-	 tst-interpose-thread \
++	 \
+ 
+ tests-static := \
+ 	 tst-interpose-static-nothread \
+diff --git a/nptl/Makefile b/nptl/Makefile
+index 6d48c0c..834d25f 100644
+--- a/nptl/Makefile
++++ b/nptl/Makefile
+@@ -222,13 +222,13 @@ LDLIBS-tst-thread_local1 = -lstdc++
+ 
+ tests = tst-typesizes \
+ 	tst-attr1 tst-attr2 tst-attr3 tst-default-attr \
+-	tst-mutex1 tst-mutex2 tst-mutex3 tst-mutex4 tst-mutex5 tst-mutex6 \
++	tst-mutex1 tst-mutex2 tst-mutex3 tst-mutex4 tst-mutex5 \
+ 	tst-mutex7 tst-mutex8 tst-mutex9 tst-mutex5a tst-mutex7a \
+ 	tst-mutexpi1 tst-mutexpi2 tst-mutexpi3 tst-mutexpi4 tst-mutexpi5 \
+-	tst-mutexpi5a tst-mutexpi6 tst-mutexpi7 tst-mutexpi7a tst-mutexpi8 \
++	tst-mutexpi5a tst-mutexpi7 tst-mutexpi7a tst-mutexpi8 \
+ 	tst-mutexpi9 \
+-	tst-spin1 tst-spin2 tst-spin3 tst-spin4 \
+-	tst-cond1 tst-cond2 tst-cond3 tst-cond4 tst-cond5 tst-cond6 tst-cond7 \
++	tst-spin1 tst-spin2 tst-spin4 \
++	tst-cond1 tst-cond2 tst-cond4 tst-cond5 tst-cond6 tst-cond7 \
+ 	tst-cond8 tst-cond9 tst-cond10 tst-cond11 tst-cond12 tst-cond13 \
+ 	tst-cond14 tst-cond15 tst-cond16 tst-cond17 tst-cond18 tst-cond19 \
+ 	tst-cond20 tst-cond21 tst-cond22 tst-cond23 tst-cond24 tst-cond25 \
+@@ -238,13 +238,13 @@ tests = tst-typesizes \
+ 	tst-robustpi1 tst-robustpi2 tst-robustpi3 tst-robustpi4 tst-robustpi5 \
+ 	tst-robustpi6 tst-robustpi7 tst-robustpi8 tst-robustpi9 \
+ 	tst-rwlock1 tst-rwlock2 tst-rwlock2a tst-rwlock2b tst-rwlock3 \
+-	tst-rwlock4 tst-rwlock5 tst-rwlock6 tst-rwlock7 tst-rwlock8 \
++	tst-rwlock4 tst-rwlock6 tst-rwlock7 tst-rwlock8 \
+ 	tst-rwlock9 tst-rwlock10 tst-rwlock11 tst-rwlock12 tst-rwlock13 \
+ 	tst-rwlock14 tst-rwlock15 tst-rwlock16 tst-rwlock17 tst-rwlock18 \
+ 	tst-rwlock19 \
+ 	tst-once1 tst-once2 tst-once3 tst-once4 tst-once5 \
+ 	tst-key1 tst-key2 tst-key3 tst-key4 \
+-	tst-sem1 tst-sem2 tst-sem3 tst-sem4 tst-sem5 tst-sem6 tst-sem7 \
++	tst-sem1 tst-sem3 tst-sem4 tst-sem5 tst-sem6 tst-sem7 \
+ 	tst-sem8 tst-sem9 tst-sem10 tst-sem11 tst-sem12 tst-sem13 tst-sem14 \
+ 	tst-sem15 tst-sem16 \
+ 	tst-barrier1 tst-barrier2 tst-barrier3 tst-barrier4 tst-barrier5 \
+@@ -255,14 +255,13 @@ tests = tst-typesizes \
+ 	tst-raise1 \
+ 	tst-join1 tst-join2 tst-join3 tst-join4 tst-join5 tst-join6 tst-join7 \
+ 	tst-detach1 \
+-	tst-eintr1 tst-eintr2 tst-eintr3 tst-eintr4 tst-eintr5 \
+ 	tst-tsd1 tst-tsd2 tst-tsd3 tst-tsd4 tst-tsd5 tst-tsd6 \
+ 	tst-tls1 tst-tls2 \
+ 	tst-fork1 tst-fork2 tst-fork3 tst-fork4 \
+ 	tst-atfork1 \
+ 	tst-cancel1 tst-cancel2 tst-cancel3 tst-cancel4 tst-cancel4_1 \
+ 	tst-cancel4_2 tst-cancel5 \
+-	tst-cancel6 tst-cancel7 tst-cancel8 tst-cancel9 tst-cancel10 \
++	tst-cancel6 tst-cancel8 tst-cancel9 tst-cancel10 \
+ 	tst-cancel11 tst-cancel12 tst-cancel13 tst-cancel14 tst-cancel15 \
+ 	tst-cancel16 tst-cancel17 tst-cancel18 tst-cancel19 tst-cancel20 \
+ 	tst-cancel21 tst-cancel22 tst-cancel23 tst-cancel24 tst-cancel25 \
+@@ -273,9 +272,9 @@ tests = tst-typesizes \
+ 	tst-flock1 tst-flock2 \
+ 	tst-signal1 tst-signal2 tst-signal3 tst-signal4 tst-signal5 \
+ 	tst-signal6 tst-signal7 \
+-	tst-exec1 tst-exec2 tst-exec3 tst-exec4 tst-exec5 \
+-	tst-exit1 tst-exit2 tst-exit3 \
+-	tst-stdio1 tst-stdio2 \
++	tst-exec1 tst-exec2 tst-exec3 tst-exec4 \
++	tst-exit1 \
++	tst-stdio2 \
+ 	tst-stack1 tst-stack2 tst-stack3 tst-stack4 tst-pthread-getattr \
+ 	tst-pthread-attr-affinity tst-pthread-mutexattr \
+ 	tst-unload \
+@@ -295,8 +294,7 @@ tests = tst-typesizes \
+ 	tst-initializers1 $(addprefix tst-initializers1-,\
+ 			    c89 gnu89 c99 gnu99 c11 gnu11) \
+ 	tst-bad-schedattr \
+-	tst-thread_local1 tst-mutex-errorcheck tst-robust10 \
+-	tst-robust-fork tst-create-detached
++	tst-thread_local1 tst-mutex-errorcheck tst-robust10
+ xtests = tst-setuid1 tst-setuid1-static tst-setuid2 \
+ 	tst-mutexpp1 tst-mutexpp6 tst-mutexpp10
+ test-srcs = tst-oddstacklimit
+@@ -348,7 +346,7 @@ CFLAGS-tst-cleanup2.c = -fno-builtin
+ CFLAGS-tst-cleanupx2.c = -fno-builtin
+ 
+ tests += tst-cancelx2 tst-cancelx3 tst-cancelx4 tst-cancelx5 \
+-	 tst-cancelx6 tst-cancelx7 tst-cancelx8 tst-cancelx9 tst-cancelx10 \
++	 tst-cancelx6 tst-cancelx8 tst-cancelx9 tst-cancelx10 \
+ 	 tst-cancelx11 tst-cancelx12 tst-cancelx13 tst-cancelx14 tst-cancelx15 \
+ 	 tst-cancelx16 tst-cancelx17 tst-cancelx18 tst-cancelx20 tst-cancelx21 \
+ 	 tst-cleanupx0 tst-cleanupx1 tst-cleanupx2 tst-cleanupx3 tst-cleanupx4 \
+diff --git a/posix/Makefile b/posix/Makefile
+index 8f23d64..bc48eba 100644
+--- a/posix/Makefile
++++ b/posix/Makefile
+@@ -76,7 +76,7 @@ tests		:= tstgetopt testfnm runtests runptests	     \
+ 		   bug-regex29 bug-regex30 bug-regex31 bug-regex32 \
+ 		   bug-regex33 tst-nice tst-nanosleep tst-regex2 \
+ 		   transbug tst-rxspencer tst-pcre tst-boost \
+-		   bug-ga1 tst-vfork1 tst-vfork2 tst-vfork3 tst-waitid \
++		   bug-ga1 tst-vfork1 tst-vfork2 tst-waitid \
+ 		   tst-getaddrinfo2 bug-glob1 bug-glob2 bug-glob3 tst-sysconf \
+ 		   tst-execvp1 tst-execvp2 tst-execlp1 tst-execlp2 \
+ 		   tst-execv1 tst-execv2 tst-execl1 tst-execl2 \
+@@ -90,8 +90,7 @@ tests		:= tstgetopt testfnm runtests runptests	     \
+ 		   bug-getopt5 tst-getopt_long1 bug-regex34 bug-regex35 \
+ 		   tst-pathconf tst-getaddrinfo4 tst-rxspencer-no-utf8 \
+ 		   tst-fnmatch3 bug-regex36 tst-getaddrinfo5 \
+-		   tst-posix_spawn-fd \
+-		   tst-posix_fadvise tst-posix_fadvise64
++		   tst-posix_spawn-fd
+ xtests		:= bug-ga2
+ ifeq (yes,$(build-shared))
+ test-srcs	:= globtest
+diff --git a/resolv/Makefile b/resolv/Makefile
+index fdc37ed..a61beeb 100644
+--- a/resolv/Makefile
++++ b/resolv/Makefile
+@@ -41,13 +41,7 @@ extra-libs += libanl
+ routines += gai_sigqueue
+ 
+ tests += \
+-  tst-bug18665 \
+-  tst-bug18665-tcp \
+-  tst-res_hconf_reorder \
+-  tst-res_use_inet6 \
+-  tst-resolv-basic \
+-  tst-resolv-network \
+-  tst-resolv-search \
++  tst-res_hconf_reorder
+ 
+ # This test sends millions of packets and is rather slow.
+ xtests += tst-resolv-qtypes
+diff --git a/stdlib/Makefile b/stdlib/Makefile
+index 5751b5d..432f232 100644
+--- a/stdlib/Makefile
++++ b/stdlib/Makefile
+@@ -74,7 +74,7 @@ tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
+ 		   tst-rand48-2 tst-makecontext tst-strtod4 tst-strtod5     \
+ 		   tst-qsort2 tst-makecontext2 tst-strtod6 tst-unsetenv1    \
+ 		   tst-makecontext3 bug-getcontext bug-fmtmsg1		    \
+-		   tst-secure-getenv tst-strtod-overflow tst-strtod-round   \
++		   tst-strtod-overflow tst-strtod-round   \
+ 		   tst-tininess tst-strtod-underflow tst-tls-atexit	    \
+ 		   tst-setcontext3 tst-tls-atexit-nodelete		    \
+ 		   tst-strtol-locale tst-strtod-nan-locale tst-strfmon_l    \
+@@ -84,7 +84,7 @@ tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
+ ifeq ($(build-hardcoded-path-in-tests),yes)
+ tests += tst-empty-env
+ endif
+-tests-static	:= tst-secure-getenv
++tests-static	:= #tst-secure-getenv
+ ifeq ($(have-cxx-thread_local),yes)
+ CFLAGS-tst-quick_exit.o = -std=c++11
+ LDLIBS-tst-quick_exit = -lstdc++
+diff --git a/support/Makefile b/support/Makefile
+index 2ace559..de6082e 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -109,9 +109,7 @@ libsupport-inhibit-o += .o
+ endif
+ 
+ tests = \
+-  README-testing \
+-  tst-support-namespace \
+-  tst-support_record_failure \
++  README-testing
+ 
+ ifeq ($(run-built-tests),yes)
+ tests-special = \
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index b3d6866..7d89faf 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -42,8 +42,7 @@ sysdep_headers += sys/mount.h sys/acct.h sys/sysctl.h \
+ 		  bits/socket_type.h bits/syscall.h bits/sysctl.h \
+ 		  bits/mman-linux.h
+ 
+-tests += tst-clone tst-clone2 tst-fanotify tst-personality tst-quota \
+-	 tst-sync_file_range
++tests += tst-clone tst-fanotify tst-personality tst-quota \
+ 
+ # Generate the list of SYS_* macros for the system calls (__NR_* macros).
+ 
+@@ -174,7 +173,7 @@ sysdep_routines += xstatconv internal_statvfs internal_statvfs64 \
+ 		   sync_file_range fallocate fallocate64
+ sysdep_headers += bits/fcntl-linux.h
+ 
+-tests += tst-fallocate tst-fallocate64
++tests += #tst-fallocate tst-fallocate64
+ endif
+ 
+ ifeq ($(subdir),elf)
+diff --git a/sysvipc/Makefile b/sysvipc/Makefile
+index 9ac44ba..6760136 100644
+--- a/sysvipc/Makefile
++++ b/sysvipc/Makefile
+@@ -30,7 +30,7 @@ routines := ftok \
+ 	    semop semget semctl semtimedop \
+ 	    shmat shmdt shmget shmctl
+ 
+-tests    := test-sysvmsg test-sysvsem test-sysvshm
++tests    :=
+ 
+ include ../Rules
+ 
