@@ -155,7 +155,7 @@ ENTRY (__socket)
 
 PSEUDO_END(__socket)
 
-libc_hidden_def (__clone)
+libc_hidden_def (__socket)
 #ifndef NO_WEAK_ALIAS
 weak_alias (__socket, socket)
 #endif
