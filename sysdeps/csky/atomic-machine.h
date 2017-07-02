@@ -65,16 +65,16 @@ typedef uintmax_t uatomic_max_t;
     __asm__ __volatile__ ("trap   2\n"                     \
      : "+r" (_a0) : "r" (_a1) , "r" (_a2)                 \
      : "a3", "memory");                \
-    _a0; })
+    (int) _a0; })
 
 #  define __arch_compare_and_exchange_bool_64_int(mem, newval, oldval) \
   (abort (), 0)
 
 #define __arch_compare_and_exchange_val_8_int(mem, newval, oldval) \
-	(abort (), 0)
+	(abort (), (__typeof (*mem))0)
 
 #define __arch_compare_and_exchange_val_16_int(mem, newval, oldval) \
-	(abort (), 0)
+	(abort (), (__typeof (*mem))0)
 
 #define __arch_compare_and_exchange_val_32_int(mem, newval, oldval) \
   ({ __typeof (mem) _mem = (mem);                       \
@@ -100,7 +100,7 @@ typedef uintmax_t uatomic_max_t;
     __gret; })
 
 # define __arch_compare_and_exchange_val_64_int(mem, newval, oldval) \
-	(abort (), 0)
+	(abort (), (__typeof (*mem))0)
 
 # define atomic_compare_and_exchange_bool_acq(mem, new, old)    \
   __atomic_bool_bysize (__arch_compare_and_exchange_bool, int,  \
