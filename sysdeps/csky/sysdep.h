@@ -26,6 +26,8 @@
 # define CSKY_ABIV2
 #endif
 
+#ifdef __ASSEMBLER__
+
 #define ASM_SIZE_DIRECTIVE(name) .size name,.-name
 
 /* Define an entry point visible from C.  */
@@ -41,3 +43,6 @@
 #define END(name)                                                             \
   cfi_endproc;								      \
   ASM_SIZE_DIRECTIVE(name)
+
+#endif
+
