@@ -360,8 +360,8 @@ elf_machine_rela (struct link_map *map, const Elf32_Rela *reloc,
 {
   Elf32_Addr *const reloc_addr = reloc_addr_arg;
   const unsigned int r_type = ELF32_R_TYPE (reloc->r_info);
-  unsigned short *opcode16_addr;
-  Elf32_Addr insn_opcode = 0x0;
+  unsigned short __attribute__((unused)) *opcode16_addr;
+  Elf32_Addr __attribute__((unused)) insn_opcode = 0x0;
 
   if (__builtin_expect (r_type == R_CKCORE_RELATIVE, 0))
     *reloc_addr = map->l_addr + reloc->r_addend;
