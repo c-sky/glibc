@@ -59,9 +59,9 @@ typedef uintmax_t uatomic_max_t;
   ({ __typeof (mem) _mem = (mem);                       \
     __typeof (oldval) _oldval = oldval;                 \
     __typeof (newval) _newval = newval;                 \
-    register __typeof (oldval) _a0 asm ("a0") = _oldval;        \
-    register __typeof (newval) _a1 asm ("a1") = _newval;        \
-    register __typeof (mem) _a2 asm ("a2") = _mem;          \
+    register int _a0 asm ("a0") = (int)_oldval;        \
+    register int _a1 asm ("a1") = (int)_newval;        \
+    register int _a2 asm ("a2") = (int)_mem;          \
     __asm__ __volatile__ ("trap   2\n"                     \
      : "+r" (_a0) : "r" (_a1) , "r" (_a2)                 \
      : "a3", "memory");                \
@@ -82,9 +82,9 @@ typedef uintmax_t uatomic_max_t;
     unsigned int _tmp = 0;                              \
     __typeof (oldval) _oldval = oldval;                 \
     __typeof (newval) _newval = newval;                 \
-    register __typeof (oldval) _a0 asm ("a0") = _oldval;    \
-    register __typeof (newval) _a1 asm ("a1") = _newval;    \
-    register __typeof (mem) _a2 asm ("a2") = _mem;          \
+    register int _a0 asm ("a0") = (int)_oldval;    \
+    register int _a1 asm ("a1") = (int)_newval;    \
+    register int _a2 asm ("a2") = (int)_mem;          \
 	__asm__ __volatile__ ("1:\n"        \
       "ldw      %1, (%4, 0x0)\n"            \
       "cmpne    %1, %0\n"                   \
