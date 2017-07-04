@@ -59,7 +59,7 @@ hexvalue (unsigned long int value, char *buf, size_t len)
 static void
 register_dump (int fd, const struct /*sigcontext*/ucontext *ctx)
 {
-  char regs[21][8];
+  char regs[35][8];
   struct iovec iov[97];
   size_t nr = 0;
 
