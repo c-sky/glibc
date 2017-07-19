@@ -794,7 +794,7 @@ else
 endif
 +gccwarn += -Wundef
 ifeq ($(enable-werror),yes)
-+gccwarn += #-Werror
++gccwarn += -Werror
 endif
 +gccwarn-c = -Wstrict-prototypes -Wold-style-definition
 

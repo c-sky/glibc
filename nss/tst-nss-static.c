@@ -1,5 +1,6 @@
 /* glibc test for static NSS.  */
 #include <stdio.h>
+#include <pwd.h>
 
 #define TEST_FUNCTION do_test ()
 static int
