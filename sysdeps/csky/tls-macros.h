@@ -52,7 +52,7 @@
      __result; })
 
 #define TLS_IE(x)                                       \
-  ({ int *__result, pc;                                 \
+  ({ int *__result;                                 \
      extern void * __read_tp (void);              		\
      void *tp = __read_tp ();                   	\
      __asm__ ("bsr 1f\n\t"                         	\
