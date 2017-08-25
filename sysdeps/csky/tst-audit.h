@@ -18,8 +18,6 @@
    License along with the GNU C Library.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
-// #include <sgidefs.h>
-
 #define pltenter la_csky_gnu_pltenter
 #define pltexit la_csky_gnu_pltexit
 #define La_regs La_csky_regs
