@@ -1,5 +1,5 @@
 /* Thread-local storage descriptor handling in the ELF dynamic linker.
-   ARM version.
+   CSKY version.
    Copyright (C) 2005, 2010 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -17,8 +17,8 @@
    License along with the GNU C Library.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ARM_DL_TLSDESC_H
-# define _ARM_DL_TLSDESC_H 1
+#ifndef _CSKY_DL_TLSDESC_H
+# define _CSKY_DL_TLSDESC_H 1
 
 /* Type used to represent a TLS descriptor in the GOT.  */
 struct tlsdesc
