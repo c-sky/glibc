@@ -235,7 +235,7 @@ _dl_start_user:\n\
         jmp     r11\n\
 .L_fixup_stack:\n\
         subu    a1, r8\n\
-        lsli    r8, 2\n\
+        lsli    r8, 3\n\
         addu    sp, r8\n\
         stw     a1, (sp, 0)\n\
         mov     a2, sp\n\
@@ -309,9 +309,9 @@ _dl_start_user:\n\
 /* A reloc type used for ld.so cmdline arg lookups to reject PLT entries.  */
 #define ELF_MACHINE_JMP_SLOT	R_CKCORE_JUMP_SLOT
 
-#define ELF_MACHINE_NO_RELA 0 //chenlf
 /* The csky never uses Elf32_Rel relocations.  */
 #define ELF_MACHINE_NO_REL 1
+#define ELF_MACHINE_NO_RELA 0
 
 /* We define an initialization functions.  This is called very early in
    _dl_sysdep_start.  */
