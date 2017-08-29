@@ -18,7 +18,7 @@
 #include <sysdeps/generic/ldconfig.h>
 
 #define SYSDEP_KNOWN_INTERPRETER_NAMES \
-  { "/lib/ld-linux.so.1", FLAG_ELF_LIBC6 },
+  { "/lib/ld-linux.so.2", FLAG_ELF_LIBC6 },
 #define SYSDEP_KNOWN_LIBRARY_NAMES \
   { "libc.so.6", FLAG_ELF_LIBC6 },	\
   { "libm.so.6", FLAG_ELF_LIBC6 },
