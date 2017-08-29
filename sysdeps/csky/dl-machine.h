@@ -235,8 +235,6 @@ _dl_start_user:\n\
         jmp     r11\n\
 .L_fixup_stack:\n\
         subu    a1, r8\n\
-        lsli    r8, 3\n\
-        addu    sp, r8\n\
         stw     a1, (sp, 0)\n\
         mov     a2, sp\n\
         addi    a2, 4\n\
