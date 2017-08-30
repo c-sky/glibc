@@ -236,18 +236,9 @@ _dl_start_user:\n\
 .L_fixup_stack:\n\
         subu    a1, r8\n\
         stw     a1, (sp, 0)\n\
-        mov     a2, sp\n\
-        addi    a2, 4\n\
-        lrw     a3, _dl_argv@GOTOFF\n\
-        addu    a3, gb\n\
-        stw     a2, (a3, 0)\n\
-        br      .L_done_fixup\n\
-");
-     /*   subu    a1, r8\n\
-        stw     a1, (sp, 0)\n\
         mov     a3, a2\n\
         lsli    r8, 2\n\
-        addu    r8, r2\n\
+        addu    r8, a2\n\
 1:      ldw     r10, (r8, 4)\n\
         stw     r10, (a3, 4)\n\
         addi    r8, 4\n\
@@ -261,20 +252,30 @@ _dl_start_user:\n\
         cmpnei  r10, 0\n\
         bt      1b\n\
 1:      ldw     a0, (r8, 0)\n\
-        addi    r8, 4\n\
-        ldw     r10,(r8, 0)\n\
-        addi    r8, 4\n\
-        stw     a0, (r3, 0)\n\
-        addi    a3, 4\n\
-        stw     r10, (r3, 0)\n\
-        addi    a3, 4\n\
         cmpnei  a0, 0\n\
+        ldw     r10,(r8, 4)\n\
+        stw     a0, (a3, 0)\n\
+        stw     r10, (a3, 4)\n\
+        addi    a3, 8\n\
+        addi    r8, 8\n\
+        ldw     a0, (r8, 0)\n\
+        ldw     r10,(r8, 4)\n\
+        stw     a0, (a3, 0)\n\
+        stw     r10, (a3, 4)\n\
+        addi    a3, 8\n\
+        addi    r8, 8\n\
+        ldw     a0, (r8, 0)\n\
+        ldw     r10,(r8, 4)\n\
+        stw     a0, (a3, 0)\n\
+        stw     r10, (a3, 4)\n\
+        addi    a3, 8\n\
+        addi    r8, 8\n\
         bt      1b\n\
         lrw     a3, _dl_argv@GOTOFF\n\
-        addu    r9, a3\n\
-        stw     a2, (r9, 0)\n\
-        br      .L_done_fixup  \n\
-*/
+        addu    a3, gb\n\
+        stw     a2, (gb, 0)\n\
+        br      .L_done_fixup\n\
+");
 /*.L_fixup_stack:\n\
         ldw     r6, (r8, 0)\n\
         ldw     r7, (sp, 0)\n\
