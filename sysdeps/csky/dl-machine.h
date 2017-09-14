@@ -273,7 +273,7 @@ _dl_start_user:\n\
         bt      1b\n\
         lrw     a3, _dl_argv@GOTOFF\n\
         addu    a3, gb\n\
-        stw     a2, (gb, 0)\n\
+        stw     a2, (a3, 0)\n\
         br      .L_done_fixup\n\
 ");
 /*.L_fixup_stack:\n\
