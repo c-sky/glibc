@@ -20,30 +20,15 @@
 #include <fenv.h>
 #include <fpu_control.h>
 #include <fenv_libc.h>
+#include <fenv_private.h>
+
+#include <stdio.h>
 
 int
 __feholdexcept (fenv_t *envp)
 {
 #ifdef __csky_hard_float__
-  unsigned int fpsr;
-  unsigned int fpcr;
-
-  _FPU_GETCW (fpcr);
-  envp->__fpcr = fpcr;
-
-  _FPU_GETFPSR (fpsr);
-  envp->__fpsr = fpsr;
-
-  /* Now set all exceptions to non-stop.  */
-  fpcr &= ~FE_ALL_EXCEPT;
-
-  /* And clear all exception flags.  */
-  fpsr &= ~(FE_ALL_EXCEPT << CAUSE_SHIFT);
-
-  _FPU_SETFPSR (fpsr);
-
-  _FPU_SETCW (fpcr);
-
+  libc_feholdexcept_vfp (envp);
   return 0;
 #else
   /* Unsupported, so fail.  */
@@ -53,4 +38,3 @@ __feholdexcept (fenv_t *envp)
 libm_hidden_def (__feholdexcept)
 weak_alias (__feholdexcept, feholdexcept)
 libm_hidden_weak (feholdexcept)
-

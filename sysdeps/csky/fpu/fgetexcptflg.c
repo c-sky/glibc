@@ -20,22 +20,14 @@
 #include <fenv.h>
 #include <fpu_control.h>
 #include <fenv_libc.h>
+#include <fenv_private.h>
 
+#include <stdio.h>
 int
 fegetexceptflag (fexcept_t *flagp, int excepts)
 {
 #ifdef __csky_hard_float__
-  fpu_control_t temp;
-
-  /* Get the current exceptions.  */
-  _FPU_GETFPSR (temp);
-
-  temp = temp >> CAUSE_SHIFT; 
-  /* We only save the relevant bits here. In particular, care has to be 
-     taken with the CAUSE bits, as an inadvertent restore later on could
-     generate unexpected exceptions.  */
-
-  *flagp = temp & excepts & FE_ALL_EXCEPT;
+  *flagp = libc_fetestexcept_vfp (excepts);
 
   /* Success.  */
   return 0;

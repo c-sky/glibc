@@ -71,6 +71,8 @@
 typedef unsigned int fpu_control_t;
 #define _FPU_GETCW(cw) (cw) = 0
 #define _FPU_SETCW(cw) (void) (cw)
+#define _FPU_GETFPSR(cw) (cw) = 0
+#define _FPU_SETFPSR(cw) (void) (cw)
 extern fpu_control_t __fpu_control;
 
 #else /* __csky_soft_float__ */

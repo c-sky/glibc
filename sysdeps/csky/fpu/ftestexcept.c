@@ -20,17 +20,14 @@
 #include <fenv.h>
 #include <fpu_control.h>
 #include <fenv_libc.h>
+#include <fenv_private.h>
 
+#include <stdio.h>
 int
 fetestexcept (int excepts)
 {
 #ifdef __csky_hard_float__
-  int cw;
-
-  /* Get current exceptions.  */
-  _FPU_GETFPSR (cw);
-  cw = cw >> CAUSE_SHIFT;
-  return cw & excepts & FE_ALL_EXCEPT;
+  return libc_fetestexcept_vfp (excepts);
 #else
   /* Unsupported, return 0.  */
   return 0;

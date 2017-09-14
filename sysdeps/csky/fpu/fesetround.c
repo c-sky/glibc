@@ -19,26 +19,15 @@
 
 #include <fenv.h>
 #include <fpu_control.h>
+#include <fenv_private.h>
 
+#include <stdio.h>
 int
 __fesetround (int round)
 {
 #ifdef __csky_hard_float__
-  fpu_control_t temp;
-
-    switch (round)
-  {
-  case FE_TONEAREST:
-  case FE_UPWARD:
-  case FE_DOWNWARD:
-  case FE_TOWARDZERO:
-    _FPU_GETCW (temp);
-    temp = (temp & ~FE_DOWNWARD) | round;
-    _FPU_SETCW (temp);
-    return 0;
-  default:
-    return 1;
-  }
+  libc_fesetround_vfp (round);
+  return 0;
 #else
   if (round == FE_TONEAREST)
   /* This is the only supported rounding mode for soft-fp.  */

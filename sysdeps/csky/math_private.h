@@ -5,6 +5,7 @@
    when built without long double support. */
 #define LDBL_CLASSIFY_COMPAT 1
 
+#include "fenv_private.h"
 #include_next <math_private.h>
 
 #endif
