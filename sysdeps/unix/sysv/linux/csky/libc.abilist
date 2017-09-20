@@ -1,8 +1,8 @@
 GLIBC_2.17 GLIBC_2.17 A
 GLIBC_2.17 _Exit F
-GLIBC_2.17 _IO_2_1_stderr_ D 0xa0
-GLIBC_2.17 _IO_2_1_stdin_ D 0xa0
-GLIBC_2.17 _IO_2_1_stdout_ D 0xa0
+GLIBC_2.17 _IO_2_1_stderr_ D 0x98
+GLIBC_2.17 _IO_2_1_stdin_ D 0x98
+GLIBC_2.17 _IO_2_1_stdout_ D 0x98
 GLIBC_2.17 _IO_adjust_column F
 GLIBC_2.17 _IO_adjust_wcolumn F
 GLIBC_2.17 _IO_default_doallocate F
@@ -530,7 +530,7 @@ GLIBC_2.17 _libc_intl_domainname D 0x5
 GLIBC_2.17 _longjmp F
 GLIBC_2.17 _mcleanup F
 GLIBC_2.17 _mcount F
-GLIBC_2.17 _nl_default_dirname D 0x38
+GLIBC_2.17 _nl_default_dirname D 0x3c
 GLIBC_2.17 _nl_domain_bindings D 0x4
 GLIBC_2.17 _nl_msg_cat_cntr D 0x4
 GLIBC_2.17 _null_auth D 0xc
