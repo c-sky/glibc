@@ -21,9 +21,9 @@
 
 #include <fenv.h>
 #include <fpu_control.h>
-#include <fenv_libc.h>
 
 #ifdef __csky_hard_float__
+#include <fenv_libc.h>
 
 static __always_inline void
 libc_feholdexcept_vfp (fenv_t *envp)
