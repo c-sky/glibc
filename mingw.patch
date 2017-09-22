@@ -1,0 +1,510 @@
+diff --git a/Makeconfig b/Makeconfig
+index 97a15b5..356008f 100644
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -535,7 +535,7 @@ link-libc-tests-rpath-link = $(link-libc-rpath-link)
+ endif  # build-hardcoded-path-in-tests
+ 
+ link-libc-before-gnulib = $(common-objpfx)libc.so$(libc.so-version) \
+-			  $(common-objpfx)$(patsubst %,$(libtype.oS),c) \
++			  $(common-objpfx)$(patsubst %,$(libtype.oss),c) \
+ 			  $(as-needed) $(elf-objpfx)ld.so \
+ 			  $(no-as-needed)
+ link-libc = $(link-libc-rpath-link) $(link-libc-before-gnulib) $(gnulib)
+@@ -794,7 +794,6 @@ else
+ endif
+ +gccwarn += -Wundef
+ ifeq ($(enable-werror),yes)
+-+gccwarn += -Werror
+ endif
+ +gccwarn-c = -Wstrict-prototypes -Wold-style-definition
+ 
+@@ -962,7 +961,7 @@ endif
+ # to pass different flags for each flavor.
+ libtypes = $(foreach o,$(object-suffixes-for-libc),$(libtype$o))
+ # .op may be added to all-object-suffixes below.
+-all-object-suffixes := .o .os .oS
++all-object-suffixes := .o .os .oss
+ object-suffixes :=
+ CPPFLAGS-.o = $(pic-default)
+ CFLAGS-.o = $(filter %frame-pointer,$(+cflags))
+@@ -1002,14 +1001,14 @@ object-suffixes-for-libc := $(object-suffixes)
+ 
+ ifeq (yes,$(build-shared))
+ # Build special library that contains the static-only routines for libc.
+-object-suffixes-for-libc += .oS
++object-suffixes-for-libc += .oss
+ 
+ # Must build the routines as PIC, though, because they can end up in (users')
+ # shared objects.  We don't want to use CFLAGS-os because users may, for
+ # example, make that processor-specific.
+-CFLAGS-.oS = $(CFLAGS-.o) $(PIC-ccflag)
+-CPPFLAGS-.oS = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
+-libtype.oS = lib%_nonshared.a
++CFLAGS-.oss = $(CFLAGS-.o) $(PIC-ccflag)
++CPPFLAGS-.oss = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
++libtype.oss = lib%_nonshared.a
+ endif
+ 
+ # The assembler can generate debug information too.
+diff --git a/Makerules b/Makerules
+index e9194e5..d7124d5 100644
+--- a/Makerules
++++ b/Makerules
+@@ -531,7 +531,7 @@ static-only-routines =
+ endif
+ endif
+ 
+-elide-routines.oS += $(filter-out $(static-only-routines),\
++elide-routines.oss += $(filter-out $(static-only-routines),\
+ 				  $(routines) $(aux) $(sysdep_routines))
+ elide-routines.os += $(static-only-routines)
+ 
+@@ -812,7 +812,7 @@ endif
+ 
+ +depfiles := $(sources:.c=.d) \
+ 	     $(patsubst %.o,%.d,$(filter %.o,$(extra-objs:.os=.o))) \
+-	     $(patsubst %.oS,%.d,$(filter %.oS,$(extra-objs))) \
++	     $(patsubst %.oss,%.d,$(filter %.oss,$(extra-objs))) \
+ 	     $(patsubst %.o,%.d,$(filter %.o,$(extra-test-objs:.os=.o))) \
+ 	     $(addsuffix .d,$(tests) $(xtests) $(test-srcs))
+ ifeq ($(build-programs),yes)
+@@ -1076,11 +1076,18 @@ symbolic-link-prog = $(LN_S)
+ endif
+ endif
+ ifndef make-shlib-link
++ifeq ($(MSYSTEM),MINGW32)
++define make-shlib-link
++rm -f $@
++$(LN_S) $< $@
++endef
++else
+ define make-shlib-link
+ rm -f $@
+ $(LN_S) `$(..)scripts/rellns-sh -p $< $@` $@
+ endef
+ endif
++endif
+ 
+ ifdef libc.so-version
+ # For a library specified to be version N, install three files:
+@@ -1123,7 +1130,7 @@ ifndef subdir
+ install: $(inst_libdir)/libc.so
+ $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
+ 			$(common-objpfx)libc.so$(libc.so-version) \
+-			$(inst_libdir)/$(patsubst %,$(libtype.oS),\
++			$(inst_libdir)/$(patsubst %,$(libtype.oss),\
+ 						  $(libprefix)$(libc-name)) \
+ 			$(+force)
+ 	(echo '/* GNU ld script';\
+@@ -1131,7 +1138,7 @@ $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
+ 	 echo '   the static library, so try that secondarily.  */';\
+ 	 cat $<; \
+ 	 echo 'GROUP ( $(slibdir)/libc.so$(libc.so-version)' \
+-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)$(libc-name))'\
++	      '$(libdir)/$(patsubst %,$(libtype.oss),$(libprefix)$(libc-name))'\
+ 	      ' AS_NEEDED (' $(rtlddir)/$(rtld-installed-name) ') )' \
+ 	) > $@.new
+ 	mv -f $@.new $@
+diff --git a/elf/Makefile b/elf/Makefile
+index 61abeb5..7e92244 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -420,21 +420,28 @@ $(objpfx)librtld.map: $(objpfx)dl-allobjs.os $(common-objpfx)libc_pic.a
+ 
+ $(objpfx)librtld.mk: $(objpfx)librtld.map Makefile
+ 	LC_ALL=C \
+-	sed -n 's@^$(common-objpfx)\([^(]*\)(\([^)]*\.os\)) *.*$$@\1 \2@p' \
+-	    $< | \
+-	while read lib file; do \
+-	  case $$lib in \
+-	  libc_pic.a) \
+-	    LC_ALL=C fgrep -l /$$file \
+-		  $(common-objpfx)stamp.os $(common-objpfx)*/stamp.os | \
+-	    LC_ALL=C \
+-	    sed 's@^$(common-objpfx)\([^/]*\)/stamp\.os$$@rtld-\1'" +=$$file@"\
+-	    ;; \
+-	  */*.a) \
+-	    echo rtld-$${lib%%/*} += $$file ;; \
+-	  *) echo "Wasn't expecting $$lib($$file)" >&2; exit 1 ;; \
+-	  esac; \
+-	done > $@T
++	sed -n 3p $(objpfx)librtld.map | \
++	LC_ALL=C \
++	$(AWK) -F 'libc_pic.a' '{ print $$1 }' | \
++	while read Dir; do \
++	  LC_ALL=C \
++	  sed -n "s,^$${Dir}\([^(]*\)(\([^)]*\.os\)) *.*$$,\1 \2,p" \
++	      $< | \
++	  while read lib file; do \
++	    case $$lib in \
++	    libc_pic.a) \
++	      LC_ALL=C fgrep -l /$$file \
++	        $(common-objpfx)stamp.os $(common-objpfx)*/stamp.os | \
++	      LC_ALL=C \
++	      sed 's@^$(common-objpfx)\([^/]*\)/stamp\.os$$@rtld-\1'" +=$$file@"\
++	      ;; \
++	    */*.a) \
++	      echo rtld-$${lib%%/*} += $$file ;; \
++	    *) echo "Wasn't expecting $$lib($$file)" >&2; exit 1 ;; \
++	    esac; \
++	  done > $@T \
++	  ; \
++	done
+ 	echo rtld-subdirs = `LC_ALL=C sed 's/^rtld-\([^ ]*\).*$$/\1/' $@T \
+ 			     | LC_ALL=C sort -u` >> $@T
+ 	mv -f $@T $@
+diff --git a/extra-lib.mk b/extra-lib.mk
+index 2552049..b69318f 100644
+--- a/extra-lib.mk
++++ b/extra-lib.mk
+@@ -16,7 +16,7 @@ object-suffixes-$(lib) := $(filter-out $($(lib)-inhibit-o),$(object-suffixes))
+ 
+ ifneq (,$($(lib)-static-only-routines))
+ ifneq (,$(filter yes%,$(build-shared)$($(lib).so-version)))
+-object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.oS)
++object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.oss)
+ endif
+ endif
+ 
+@@ -34,7 +34,7 @@ all-$(lib)-routines := $($(lib)-routines) $($(lib)-sysdep_routines)
+ ifeq (,$(filter $(lib), $(extra-libs-noinstall)))
+ install-lib += $(foreach o,$(object-suffixes-$(lib)),$(lib:lib%=$(libtype$o)))
+ endif
+-extra-objs += $(foreach o,$(filter-out .os .oS,$(object-suffixes-$(lib))),\
++extra-objs += $(foreach o,$(filter-out .os .oss,$(object-suffixes-$(lib))),\
+ 			$(patsubst %,%$o,$(filter-out \
+ 					   $($(lib)-shared-only-routines),\
+ 					   $(all-$(lib)-routines))))
+@@ -42,8 +42,8 @@ ifneq (,$(filter .os,$(object-suffixes-$(lib))))
+ extra-objs += $(patsubst %,%.os,$(filter-out $($(lib)-static-only-routines),\
+ 					     $(all-$(lib)-routines)))
+ endif
+-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
+-extra-objs += $(patsubst %,%.oS,$(filter $($(lib)-static-only-routines),\
++ifneq (,$(filter .oss,$(object-suffixes-$(lib))))
++extra-objs += $(patsubst %,%.oss,$(filter $($(lib)-static-only-routines),\
+ 					 $(all-$(lib)-routines)))
+ endif
+ alltypes-$(lib) := $(foreach o,$(object-suffixes-$(lib)),\
+@@ -67,7 +67,7 @@ endif
+ 
+ 
+ # Use o-iterator.mk to generate a rule for each flavor of library.
+-ifneq (,$(filter-out .os .oS,$(object-suffixes-$(lib))))
++ifneq (,$(filter-out .os .oss,$(object-suffixes-$(lib))))
+ define o-iterator-doit
+ $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
+   $(patsubst %,$(objpfx)%$o,\
+@@ -75,7 +75,7 @@ $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
+ 			  $(all-$(lib)-routines))); \
+ 	$$(build-extra-lib)
+ endef
+-object-suffixes-left = $(filter-out .os .oS,$(object-suffixes-$(lib)))
++object-suffixes-left = $(filter-out .os .oss,$(object-suffixes-$(lib)))
+ include $(patsubst %,$(..)o-iterator.mk,$(object-suffixes-left))
+ endif
+ 
+@@ -87,9 +87,9 @@ $(objpfx)$(patsubst %,$(libtype.os),$(lib:lib%=%)): \
+ 	$(build-extra-lib)
+ endif
+ 
+-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
+-$(objpfx)$(patsubst %,$(libtype.oS),$(lib:lib%=%)): \
+-  $(patsubst %,$(objpfx)%.oS,\
++ifneq (,$(filter .oss,$(object-suffixes-$(lib))))
++$(objpfx)$(patsubst %,$(libtype.oss),$(lib:lib%=%)): \
++  $(patsubst %,$(objpfx)%.oss,\
+ 	     $(filter $($(lib)-static-only-routines),\
+ 		      $(all-$(lib)-routines)))
+ 	$(build-extra-lib)
+diff --git a/nptl/Makefile b/nptl/Makefile
+index 6d48c0c..0f07053 100644
+--- a/nptl/Makefile
++++ b/nptl/Makefile
+@@ -464,7 +464,7 @@ install: $(inst_libdir)/libpthread.so
+ 
+ $(inst_libdir)/libpthread.so: $(common-objpfx)format.lds \
+ 			      $(objpfx)libpthread.so$(libpthread.so-version) \
+-			      $(inst_libdir)/$(patsubst %,$(libtype.oS),\
++			      $(inst_libdir)/$(patsubst %,$(libtype.oss),\
+ 							$(libprefix)pthread) \
+ 			      $(+force)
+ 	(echo '/* GNU ld script';\
+@@ -472,7 +472,7 @@ $(inst_libdir)/libpthread.so: $(common-objpfx)format.lds \
+ 	 echo '   the static library, so try that secondarily.  */';\
+ 	 cat $<; \
+ 	 echo 'GROUP ( $(slibdir)/libpthread.so$(libpthread.so-version)' \
+-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)pthread)'\
++	      '$(libdir)/$(patsubst %,$(libtype.oss),$(libprefix)pthread)'\
+ 	      ')' \
+ 	) > $@.new
+ 	mv -f $@.new $@
+diff --git a/scripts/check-local-headers.sh b/scripts/check-local-headers.sh
+index 7859f61..cd03f11 100755
+--- a/scripts/check-local-headers.sh
++++ b/scripts/check-local-headers.sh
+@@ -44,4 +44,4 @@ BEGIN {
+     }
+   }
+ }
+-END { exit status }' */*.{o,os,oS}.d
++END { exit status }' */*.{o,os,oss}.d
+diff --git a/sunrpc/Makefile b/sunrpc/Makefile
+index 0c1e612..918d0ef 100644
+--- a/sunrpc/Makefile
++++ b/sunrpc/Makefile
+@@ -167,8 +167,12 @@ $(cross-rpcgen-objs): $(objpfx)cross-%.o: %.c $(before-compile)
+ 	$(BUILD_CC) $($(basename $(<F))-CFLAGS) $(ALL_BUILD_CFLAGS) $< \
+ 		$(OUTPUT_OPTION) $(native-compile-mkdep-flags) -c
+ 
++ifeq ($(MSYSTEM),MINGW32)
++INTL = -lintl
++endif
++
+ $(objpfx)cross-rpcgen: $(cross-rpcgen-objs)
+-	$(BUILD_CC) $^ $(BUILD_LDFLAGS) -o $@
++	$(BUILD_CC) $^ $(BUILD_LDFLAGS) -o $@ $(INTL)
+ 
+ # This makes sure -DIN_MODULE is passed for all these modules.
+ cpp-srcs-left := $(rpcgen-objs:.o=.c)
+diff --git a/sunrpc/rpc/types.h b/sunrpc/rpc/types.h
+index beded52..949a42c 100644
+--- a/sunrpc/rpc/types.h
++++ b/sunrpc/rpc/types.h
+@@ -74,6 +74,8 @@ typedef unsigned long rpcport_t;
+ # define __daddr_t_defined
+ #endif
+ 
++#if !defined (__CYGWIN__) && !defined(__MINGW32__)
++
+ #ifndef __u_char_defined
+ typedef __u_char u_char;
+ typedef __u_short u_short;
+@@ -90,10 +92,16 @@ typedef __caddr_t caddr_t;
+ # define __daddr_t_defined
+ #endif
+ 
++#endif
++
+ #include <sys/time.h>
+ #include <sys/param.h>
+ 
++#ifdef __MINGW32__
++#include <winsock2.h>
++#else
+ #include <netinet/in.h>
++#endif
+ 
+ #ifndef INADDR_LOOPBACK
+ #define       INADDR_LOOPBACK         (u_long)0x7F000001
+diff --git a/sunrpc/rpc_main.c b/sunrpc/rpc_main.c
+index 0a51e2c..c3f87c3 100644
+--- a/sunrpc/rpc_main.c
++++ b/sunrpc/rpc_main.c
+@@ -45,7 +45,14 @@
+ #include <sys/param.h>
+ #include <sys/file.h>
+ #include <sys/stat.h>
++#ifdef __MINGW32__
++#include <windows.h>
++#include <process.h>
++#include <signal.h>
++#include <string.h>
++#else
+ #include <sys/wait.h>
++#endif
+ #include "rpc_parse.h"
+ #include "rpc_util.h"
+ #include "rpc_scan.h"
+@@ -57,6 +64,25 @@
+ #define EXTEND	1		/* alias for TRUE */
+ #define DONT_EXTEND	0	/* alias for FALSE */
+ 
++#ifdef __MINGW32__
++char * rindex (const char *s, int c)
++{
++    return strrchr (s, c);
++}
++char * stpncpy (char *dst, const char *src, size_t len)
++{
++    size_t n = strlen (src);
++    if (n > len)
++            n = len;
++    return strncpy (dst, src, len) + n;
++}
++char * stpcpy (char *dst, const char *src)
++{
++    const size_t len = strlen (src);
++    return (char *) memcpy (dst, src, len + 1) + len;
++}
++#endif
++
+ struct commandline
+   {
+     int cflag;			/* xdr C routines */
+@@ -81,7 +107,11 @@ static int cppDefined;	/* explicit path for C preprocessor */
+ static const char *CPP = "/lib/cpp";
+ static const char CPPFLAGS[] = "-C";
+ static char *pathbuf;
++#ifdef __MINGW32__
++static HANDLE cpp_pid;
++#else
+ static int cpp_pid;
++#endif
+ static const char *allv[] =
+ {
+   "rpcgen", "-s", "udp", "-s", "tcp"
+@@ -326,11 +356,23 @@ clear_args (void)
+ static void
+ find_cpp (void)
+ {
++#ifdef __MINGW32__
++  char* CPPENVV = getenv("CPP");
++  if (CPPENVV)
++   {
++     CPP = (char*)malloc(strlen(CPPENVV)+1);
++     strcpy((char*)CPP, CPPENVV);
++     /* Don't bother checking that it exists with stat64 as
++     * we'd have to check in the path, also it usually ends
++     * with a few arguments. */
++     return;
++   }
++#else
+   struct stat64 buf;
+ 
+   if (stat64 (CPP, &buf) == 0)
+     return;
+-
++#endif
+   if (cppDefined) /* user specified cpp but it does not exist */
+     {
+       fprintf (stderr, _ ("cannot find C preprocessor: %s\n"), CPP);
+@@ -344,6 +386,118 @@ find_cpp (void)
+ /*
+  * Open input file with given define for C-preprocessor
+  */
++#ifdef __MINGW32__
++static void
++open_input (const char *infile, const char *define)
++{
++  int argi;
++  int argcc = 0;
++  LPSTR argsall;
++  HANDLE StdOutHandle;
++  HANDLE StdErrHandle;
++  HANDLE ReadPipe;
++  HANDLE WritePipe;
++  SECURITY_ATTRIBUTES SecAttr;
++  STARTUPINFO StartupInfo;
++  PROCESS_INFORMATION ProcessInfo;
++  DWORD Status;
++
++  find_cpp ();
++  putarg (0, CPP);
++  putarg (1, CPPFLAGS);
++  addarg (define);
++  if (infile)
++     addarg (infile);
++  addarg ((char *) NULL);
++  for (argi = 0; argi < argcount - 1; ++argi)
++  {
++     argcc += strlen(arglist[argi])+2;
++  }
++  argsall = (LPSTR)alloca(argcc + 1);
++  if (!argsall)
++  {
++    fprintf (stderr, _ ("cannot alloca for argsall\n"));
++    exit (1);
++  }
++  argsall[0] = '\0';
++  for (argi = 0; argi < argcount - 1; ++argi)
++  {
++     strcat((char*)argsall, arglist[argi]);
++     strcat((char*)argsall, " ");
++  }
++   memset(&SecAttr, 0, sizeof(SecAttr));
++   memset(&StartupInfo, 0, sizeof(StartupInfo));
++   memset(&ProcessInfo, 0, sizeof(ProcessInfo));
++
++   SecAttr.nLength = sizeof(SecAttr);
++   SecAttr.bInheritHandle = TRUE;
++
++   Status = CreatePipe( &ReadPipe, &WritePipe, &SecAttr, 0 );
++   if (!Status)
++   {
++     fprintf (stderr, _ ("cannot CreatePipe: GetLastError() -> %d\n"), GetLastError());
++     exit (1);
++   }
++
++   SetHandleInformation( ReadPipe, HANDLE_FLAG_INHERIT, 0 );
++
++  /*
++   StdOutHandle = GetStdHandle( STD_OUTPUT_HANDLE );
++   StdErrHandle = GetStdHandle( STD_ERROR_HANDLE );
++   if (StdOutHandle != INVALID_HANDLE_VALUE) {
++   SetHandleInformation( StdOutHandle, HANDLE_FLAG_INHERIT, 0 );
++   }
++   if (StdErrHandle != INVALID_HANDLE_VALUE) {
++      SetHandleInformation( StdErrHandle, HANDLE_FLAG_INHERIT, 0 );
++   }
++  */
++
++   StartupInfo.cb = sizeof(StartupInfo);
++   StartupInfo.hStdInput = GetStdHandle( STD_INPUT_HANDLE );
++   StartupInfo.hStdOutput = WritePipe;
++   StartupInfo.hStdError = GetStdHandle( STD_ERROR_HANDLE );
++   StartupInfo.dwFlags = STARTF_USESTDHANDLES;
++
++   Status = CreateProcess(
++   NULL, /* lpApplicationName */
++   argsall, /* lpCommandLine */
++   NULL, /* lpProcessAttributes */
++   NULL, /* lpThreadAttributes */
++   TRUE, /* bInheritHandles */
++   0, /* dwCreationFlags */
++   NULL, /* lpEnvironment */
++   NULL, /* lpCurrentDirectory */
++   &StartupInfo, /* lpStartupInfo */
++   &ProcessInfo ); /* lpProcessInformation */
++
++   CloseHandle( WritePipe );
++   if (!Status)
++   {
++     fprintf (stderr, _ ("cannot find C preprocessor: %s, GetLastError() -> %d\n"), CPP, GetLastError());
++     exit (1);
++   }
++   int fd = _open_osfhandle((intptr_t)ReadPipe, _O_APPEND | _O_RDONLY);
++   if(fd != -1)
++   {
++       fin = _fdopen(fd, "a+"); 
++   }
++   cpp_pid = ProcessInfo.hProcess;
++    
++  
++}
++/* Close the connection to the C-preprocessor and check for successfull
++   termination.  */
++static void
++close_input (void)
++{
++   WaitForSingleObject(cpp_pid, INFINITE);
++}
++
++#else
++
++/*
++ * Open input file with given define for C-preprocessor
++ */
+ static void
+ open_input (const char *infile, const char *define)
+ {
+@@ -417,6 +571,8 @@ close_input (void)
+     }
+ }
+ 
++#endif
++
+ /* valid tirpc nettypes */
+ static const char *valid_ti_nettypes[] =
+ {
