@@ -239,18 +239,19 @@ _dl_start_user:\n\
         mov     a3, a2\n\
         lsli    r8, 2\n\
         addu    r8, a2\n\
-1:      ldw     r10, (r8, 4)\n\
-        stw     r10, (a3, 4)\n\
+1:      ldw     r10, (r8, 0)\n\
+        stw     r10, (a3, 0)\n\
         addi    r8, 4\n\
         addi    a3, 4\n\
         cmpnei  r10, 0\n\
         bt      1b\n\
-1:      ldw     r10, (r8, 4)\n\
-        stw     r10, (a3, 4)\n\
+1:      ldw     r10, (r8, 0)\n\
+        stw     r10, (a3, 0)\n\
         addi    r8, 4\n\
         addi    a3, 4\n\
         cmpnei  r10, 0\n\
         bt      1b\n\
+        subi    r8, 4\n\
 1:      ldw     a0, (r8, 0)\n\
         cmpnei  a0, 0\n\
         ldw     r10,(r8, 4)\n\
