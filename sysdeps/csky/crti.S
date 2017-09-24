@@ -87,6 +87,7 @@ _init:
 	subi	sp, 8
 	stw	lr, (sp, 0)
 #ifdef __PIC__
+	stw     gb, (sp, 4)
         bsr     .Lgetpc
 .Lgetpc:
         lrw     gb, .Lgetpc@GOTPC

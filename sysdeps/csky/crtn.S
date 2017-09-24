@@ -40,6 +40,9 @@
 
 	.section .init,"ax",@progbits
 	ldw	lr, (sp, 0)
+#ifdef __PIC__
+	ldw     gb, (sp, 4)
+#endif
 	addi	sp, 8
 	rts
 
