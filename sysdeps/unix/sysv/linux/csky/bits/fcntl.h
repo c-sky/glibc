@@ -1,6 +1,7 @@
-/* O_*, F_*, FD_* bit values for Linux.
-   Copyright (C) 1995-2012 Free Software Foundation, Inc.
+/* O_*, F_*, FD_* bit values for the generic Linux ABI.
+   Copyright (C) 2011-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
+   Contributed by Chris Metcalf <cmetcalf@tilera.com>, 2011.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -20,10 +21,11 @@
 # error "Never use <bits/fcntl.h> directly; include <fcntl.h> instead."
 #endif
 
-#define __O_DIRECTORY	 040000	/* Must be a directory.	 */
-#define __O_NOFOLLOW	0100000	/* Do not follow links.	 */
-#define __O_DIRECT	0200000	/* Direct disk access.	*/
-#define __O_LARGEFILE	0400000
+#include <bits/wordsize.h>
+
+#if __WORDSIZE == 64
+# define __O_LARGEFILE	0
+#endif
 
 struct flock
   {
