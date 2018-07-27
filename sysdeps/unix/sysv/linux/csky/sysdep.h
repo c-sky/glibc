@@ -1,4 +1,5 @@
-/* Copyright (C) 2018 Free Software Foundation, Inc.
+/* Assembly macros for C-SKY.
+   Copyright (C) 2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,7 +22,7 @@
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/generic/sysdep.h>
 #include <sysdeps/unix/sysv/linux/sysdep.h>
-#include <sysdeps/unix/csky/sysdep.h>
+#include <sysdeps/csky/sysdep.h>
 
 /* Defines RTLD_PRIVATE_ERRNO and USE_DL_SYSINFO.  */
 #include <dl-sysdep.h>
@@ -310,7 +311,7 @@ __local_syscall_error:                                          \
     UNDOARGS2_##args
 
 /*
- * to be quite different with DO_CALL, DO_CALL_2 need not save r7.
+   to be quite different with DO_CALL, DO_CALL_2 need not save r7.
  */
 #undef  DOARGS2_0
 #define DOARGS2_0
@@ -734,9 +735,9 @@ __local_syscall_error:                                          \
 1:						\
   lrw   guard, 1b@GOTPC;			\
   addu  t0, guard;                              \
-  lrw   guard, __pointer_chk_guard_local@GOTOFF;\
-  addu  t0, guard;                              \
-  ldw   guard, (t0, 0);                         \
+  lrw   guard, __pointer_chk_guard_local@GOT;	\
+  ldr.w guard, (t0, guard << 0);		\
+  ldw   guard, (guard, 0);                      \
   xor   dst, src, guard;
 #  else
 #   define PTR_MANGLE(dst, src, guard)  \
@@ -745,9 +746,10 @@ __local_syscall_error:                                          \
 1:  		                                \
   lrw   guard, 1b@GOTPC;                  	\
   addu  lr, guard;                              \
-  lrw   guard, __pointer_chk_guard_local@GOTOFF;\
+  lrw   guard, __pointer_chk_guard_local@GOT;	\
   addu  lr, guard;                              \
   ldw   guard, (lr, 0);                         \
+  ldw   guard, (guard, 0);                      \
   mov   lr, r7;                                 \
   xor   dst, src, guard;
 #  endif
@@ -769,9 +771,9 @@ extern uintptr_t __pointer_chk_guard_local;
 1:                                       	\
   lrw   guard, 1b@GOTPC;                  	\
   addu  t0, guard;				\
-  lrw	guard, __pointer_chk_guard@GOTOFF;	\
-  addu  t0, guard;				\
-  ldw	guard, (t0, 0);				\
+  lrw	guard, __pointer_chk_guard@GOT;		\
+  ldr.w guard, (t0, guard << 0);		\
+  ldw   guard, (guard, 0);                      \
   xor	dst, src, guard;
 #  else
 #   define PTR_MANGLE(dst, src, guard)		\
@@ -780,9 +782,11 @@ extern uintptr_t __pointer_chk_guard_local;
 1:						\
   lrw   guard, 1b@GOTPC;                  	\
   addu  lr, guard;                              \
-  lrw   guard, __pointer_chk_guard@GOTOFF;      \
+  lrw   guard, __pointer_chk_guard@GOT;		\
+  ldw   guard, (guard, 0);                      \
   addu  lr, guard;                              \
   ldw   guard, (lr, 0);                         \
+  ldw   guard, (guard, 0);                      \
   mov   lr, r7;					\
   xor   dst, src, guard;
 
